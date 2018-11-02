@@ -16,7 +16,6 @@ class Employee(object):
     self.manager = manager
 
     # willは曜日_時間帯。1は朝、2は昼、3は夜。
-    # 例）mon_1は月曜日の朝
     self.wills = wills
 
   def is_applicated(self, box_name):
@@ -72,25 +71,25 @@ class Shift(object):
   def print_inspect(self):
     user_no = 0
     for line in self.slice():
-      print "ユーザ%d" % user_no
-      print line
+      print("ユーザ%d" % user_no)
+      print(line)
       user_no = user_no + 1
 
       index = 0
       for e in line:
         if e == 1:
-          print self.SHIFT_BOXES[index]
+          print (self.SHIFT_BOXES[index])
         index = index + 1
 
   # CSV形式でアサイン結果の出力をする
   def print_csv(self):
     for line in self.slice():
-      print ','.join(map(str, line))
+      print(','.join(map(str, line)))
 
   # TSV形式でアサイン結果の出力をする
   def print_tsv(self):
     for line in self.slice():
-      print "\t".join(map(str, line))
+      print("\t".join(map(str, line)))
 
   # ユーザ番号を指定してコマ名を取得する
   def get_boxes_by_user(self, user_no):
@@ -234,8 +233,8 @@ e9 = Employee(9, "小山", 30, True, ['thu_1', 'thu_2', 'thu_3',
 
 employees = [e0, e1, e2, e3, e4, e5, e6, e7, e8, e9]
 
-creator.create("FitnessPeopleCount", base.Fitness, weights=(-10.0, -100.0, -1.0, -100.0, -10.0))
-creator.create("Individual", list, fitness=creator.FitnessPeopleCount)
+creator.create("FitnessMax", base.Fitness, weights=(1.0,))
+creator.create("Individual", list, fitness=creator.FitnessMax)
 
 toolbox = base.Toolbox()
 
@@ -334,7 +333,7 @@ if __name__ == '__main__':
           sum2 = sum(x*x for x in fits)
           std = abs(sum2 / length - mean**2)**0.5
 
-          print("* パラメータ%d") % index
+          print("* パラメータ%d" % index)
           print("  Min %s" % min(fits))
           print("  Max %s" % max(fits))
           print("  Avg %s" % mean)
