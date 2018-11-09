@@ -9,13 +9,79 @@ from deap import creator
 from deap import tools
 from deap import cma
 
+#ALL
+max_num_d = [11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,18,11,11,11,11,11,11,11]
+min_num_d = [8,8,8,8,7,8,8,8,7,7,7,7,7,8,8,8,8,8,8,7,8,8,8,13,8,8,7,8,8,8,8]
+max_num_e = [4 for i in range(30)]
+min_num_e = [4 for i in range(30)]
+max_num_n = [3 for i in range(30)]
+min_num_n = [3 for i in range(30)]
+
+#1-9 = 1,9
+max_num_1_9_d = [2 for i in range(30)]
+min_num_1_9_d = [0 for i in range(30)]
+max_num_1_9_e = [1 for i in range(30)]
+min_num_1_9_e = [0 for i in range(30)]
+max_num_1_9_n = [1 for i in range(30)]
+min_num_1_9_n = [0 for i in range(30)]
+
+#A_SS = 1,2,3,4,5,6
+max_num_A_SS_d = [2,3,3,3,2,3,2,3,2,2,2,2,2,2,3,2,2,3,2,2,3,3,6,2,2,2,3,3,3,2]
+min_num_A_SS_d = [2 for i in range(30)]
+max_num_A_SS_e = [1 for i in range(30)]
+min_num_A_SS_e = [1 for i in range(30)]
+max_num_A_SS_n = [1 for i in range(30)]
+min_num_A_SS_n = [1 for i in range(30)]
+
+#B_rq_s = 19,20,21,22,23,24,25
+max_num_B_rq_s_d = [4,6,6,6,4,6,4,6,4,4,4,4,4,4,6,4,4,6,4,4,5,6,6,4,4,4,6,6,6,4]
+min_num_B_rq_s_d = [2 for i in range(30)]
+max_num_B_rq_s_e = [1 for i in range(30)]
+min_num_B_rq_s_e = [1 for i in range(30)]
+max_num_B_rq_s_n = [2 for i in range(30)]
+min_num_B_rq_s_n = [0 for i in range(30)]
+
+#B_SS = 14,15,16,17,18
+max_num_B_SS_s_d = [2,3,3,3,2,3,2,3,1,1,1,2,1,2,3,2,2,3,2,1,3,3,6,2,2,2,3,3,3,2]
+min_num_B_SS_s_d = [1,1,1,1,1,1,1,1,0,0,0,1,0,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1]
+max_num_B_SS_s_e = [1 for i in range(30)]
+min_num_B_SS_s_e = [1 for i in range(30)]
+max_num_B_SS_s_n = [1 for i in range(30)]
+min_num_B_SS_s_n = [0 for i in range(30)]
+
+#B_SS_s = 14,15,16,17,18,25
+max_num_1_9_d = [3,3,3,3,2,3,3,3,2,2,2,2,2,3,3,3,3,3,2,2,3,3,6,3,3,2,3,3,3,3]
+min_num_1_9_d = [2,2,2,2,2,2,2,2,1,1,1,2,1,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,2,2]
+max_num_1_9_e = [2 for i in range(30)]
+min_num_1_9_e = [1 for i in range(30)]
+max_num_1_9_n = [1 for i in range(30)]
+min_num_1_9_n = [1 for i in range(30)]
+
+#GroupA = 1,2,3,4,5,6,7,8,9,10,11,12,13
+max_num_A_d = [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,9,6,6,6,6,6,6,6]
+min_num_A_d = [4,4,4,4,3,4,4,4,4,4,4,3,4,4,4,4,4,4,3,4,4,4,6,4,4,3,4,4,4,4]
+max_num_A_e = [2 for i in range(30)]
+min_num_A_e = [2 for i in range(30)]
+max_num_A_n = [2 for i in range(30)]
+min_num_A_n = [1 for i in range(30)]
+
+#GroupB = 14,15,16,17,18,19,20,21,22,23,24,25
+max_num_B_d = [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,9,6,6,6,6,6,6,6]
+min_num_B_d = [4,4,4,4,3,4,4,4,4,4,4,3,4,4,4,4,4,4,3,4,4,4,6,4,4,3,4,4,4,4]
+max_num_B_e = [2 for i in range(30)]
+min_num_B_e = [2 for i in range(30)]
+max_num_B_n = [2 for i in range(30)]
+min_num_B_n = [1 for i in range(30)]
+
 class Employee(object):
   def __init__(self, no, shift, manager):
     self.no = no
     self.manager = manager
     self.shift = shift
 
-creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
+def employee_num()
+
+creator.create("FitnessMin", base.Fitness, weights=(-1.0,-1.0))
 creator.create("Individual", list, fitness=creator.FitnessMin)
 
 toolbox = base.Toolbox()
@@ -23,7 +89,7 @@ toolbox = base.Toolbox()
 toolbox.register("map", futures.map)
 
 toolbox.register("attr_bool", random.randint, 0,3)
-toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_bool, 31)
+toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_bool, 30)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
 def mut(individual,indpb):
@@ -85,7 +151,6 @@ def main():
 
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
         fitnesses = map(toolbox.evaluate, invalid_ind)
-        f_list = list(fitnesses)
 
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
