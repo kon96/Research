@@ -45,18 +45,14 @@ toolbox.register("mutate", mut, indpb=0.05)
 toolbox.register("select", tools.selTournament, tournsize=3)
 
 def main():
-    """
-   nurse = []
-    for i in range(25):
-        nurse.append(Employee(i,[],False))
-        for j in range(30):
-            nurse[i].shift.append(random.randint(0,4))
-        print(nurse[i].shift)
-    """
     pop = toolbox.population(n = 25)
     CXPB, MUTPB, NGEN = 0.5, 0.2, 40
+    nurse = []
 
     print("Start of evolution")
+    for i in range(len(pop)):
+        nurse.append(Employee(i + 1,[],False))
+        
 
     fitness = list(map(toolbox.evaluate, pop))
     for ind, fit in zip(pop,fitness):
@@ -69,6 +65,12 @@ def main():
 
         offspring = toolbox.select(pop,len(pop))
         offspring = list(map(toolbox.clone, offspring))
+
+        j = 0
+
+        for shift in offspring:
+            nurse[j].shift = shift
+            j += 1
 
         for child1 ,child2 in zip(offspring[::2],offspring[1::2]):
             if random.random() <CXPB:
@@ -83,6 +85,7 @@ def main():
 
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
         fitnesses = map(toolbox.evaluate, invalid_ind)
+        f_list = list(fitnesses)
 
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
