@@ -209,8 +209,8 @@ def main():
     nurse = []
 
     print("Start of evolution")
-    for i in range(len(pop)):
-        nurse.append(Employee(i + 1,[],False))
+    #for i in range(len(pop)):
+     #   nurse.append(Employee(i + 1,[],False))
         
 
     fitness = list(map(toolbox.evaluate, pop))
@@ -234,7 +234,7 @@ def main():
            # j += 1
 
         for child1 ,child2 in zip(offspring[::2],offspring[1::2]):
-            if random.random() <CXPB:
+            if random.random() < CXPB:
                 for gene1, gene2 in zip(child1[::2],child2[1::2]):
                     toolbox.mate(gene1,gene2)
                     del child1.fitness.values
