@@ -13,7 +13,7 @@
         {
             "label": "python",
             "type": "shell",
-            "command": "python",
+            "command": "python3",
             "args": ["${file}"],
             "group": {
                 "kind": "build",
