@@ -156,18 +156,51 @@ toolbox.register("map", futures.map)
 toolbox.register("attr_bool", random.randint, 0,3)
 toolbox.register("gene", tools.initRepeat, list , toolbox.attr_bool, 30)
 toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.gene,25)
-toolbox.register("population",tools.initRepeat,list,toolbox.individual)
+toolbox.register("population",tools.initRepeat,list,toolbox.gene)
 
 def mut(individual,indpb):
     for i in range(len(individual)):
-        for j in range(len(individual[i])):
-            if random.random() <indpb:
-                individual[i][j] = random.randint(0,3)
+        if random.random() <indpb:
+            individual[i] = random.randint(0,3)
 
     return individual,
 
-def evalOneMin(individual):
-    return sum(individual),
+def cxOne(s, pop, ind1, ind2):
+    """Executes a one point crossover on the input :term:`sequence` individuals.
+    The two individuals are modified in place. The resulting individuals will
+    respectively have the length of the other.
+    
+    :param ind1: The first individual participating in the crossover.
+    :param ind2: The second individual participating in the crossover.
+    :returns: A tuple of two individuals.
+
+    This function uses the :func:`~random.randint` function from the
+    python base :mod:`random` module.
+    """
+    a = []
+    b = []
+    c = []
+    d = []
+    a[:] = ind1[:]
+    b[:] = ind2[:]
+    num = None
+
+    min_f = list(toolbox.evaluate(pop))
+    size = min(len(ind1), len(ind2))
+    for i in range(1,size):
+        c[:] = a[:]
+        d[:] = b[:]
+        c[i:], d[i:] = d[i:], c[i:]
+        pop[s*2][:] = c[:]
+        pop[s*2+1][:] = d[:]
+        fitness = list(toolbox.evaluate(pop))
+        if(fitness < min_f):
+            min_f[0] = fitness[0]
+            num = i
+    if(num is not None):    
+        ind1[num:], ind2[num:] = b[num:], a[num:]
+    
+    return ind1, ind2
 
 def evalshift(pop):
     num = employee_num(pop) 
@@ -175,7 +208,7 @@ def evalshift(pop):
 
 toolbox.register("evaluate",evalshift)
 
-toolbox.register("mate", tools.cxTwoPoint)
+toolbox.register("mate", cxOne)
 
 toolbox.register("mutate", mut, indpb = 0.05)
 #toolbox.register("mutate", mut)
@@ -187,19 +220,15 @@ def main():
     global e
     global f
     global n
-    pop = toolbox.population(n = 150)
+    pop = toolbox.population(n = 25)
     CXPB, MUTPB, NGEN = 0.8, 0.2, 1000
-    nurse = []
 
     print("Start of evolution")
     #for i in range(len(pop)):
      #   nurse.append(Employee(i + 1,[],False))
         
 
-    fitness = list(map(toolbox.evaluate, pop))
-    for ind, fit in zip(pop,fitness):
-        ind.fitness.values = fit
-
+    fitness = toolbox.evaluate(pop)
     print(" Evaluating %i individuals" % len(pop))
 
     for g in range(NGEN):
@@ -207,7 +236,7 @@ def main():
             NGEN -= 0.01
         print("-- Generation %i --" % g)
 
-        offspring = toolbox.select(pop,len(pop))
+        offspring = pop
         offspring = list(map(toolbox.clone, offspring))
 
         j = 0
@@ -218,49 +247,29 @@ def main():
 
         for child1 ,child2 in zip(offspring[::2],offspring[1::2]):
             if random.random() < CXPB:
-                for gene1, gene2 in zip(child1[::2],child2[1::2]):
-                    toolbox.mate(gene1,gene2)
-                    del child1.fitness.values
-                    del child2.fitness.values
+                toolbox.mate(j,offspring,child1,child2)
+            j += 1
         
         for mutant in offspring:
             if random.random() < MUTPB:
                 #toolbox.mutate(mutant,MUTPB)
                 toolbox.mutate(mutant)
-                del mutant.fitness.values
 
-        invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-        fitnesses = map(toolbox.evaluate, invalid_ind)
-
-        for ind, fit in zip(invalid_ind, fitnesses):
-            ind.fitness.values = fit
-
-        print(" Evaluated %i individuals" % len(invalid_ind))
+        fitnesses = toolbox.evaluate(pop)
 
         pop[:] = offspring
 
-        fits = [ind.fitness.values[0] for ind in pop]
-
-        length = len(pop)
-        mean = sum(fits) /length
-        sum2 = sum(x*x for x in fits)
-        std = abs(sum2 / length - mean**2)**0.5
-
-        print("  Min %s" % min(fits))
-        print("  Max %s" % max(fits))
-        print("  Avg %s" % mean)
-        print("  Std %s" % std)
+        print("fits = %d" % fitnesses)
         if(min == 0):
             break
 
     print("-- End of (successful) evolution --")
     
-    best_ind = tools.selBest(pop, 1)[0]
     print("Best individual is ")
-    for ind in best_ind:
+    for ind in pop:
         print(ind)
-    print(best_ind.fitness.values)
-    result(best_ind)
+    print(fitnesses)
+    result(pop)
     print(d) 
     print(e)
     print(n)
