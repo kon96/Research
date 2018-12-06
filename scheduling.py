@@ -1,4 +1,3 @@
-
 import random
 import sys
 sys.path.append('/usr/local/lib/python3.6/dist-packages')
@@ -340,8 +339,6 @@ def main():
         print(ind)
     print(best_ind.fitness.values)
     result(best_ind)
-
-
 
 if __name__ == '__main__':
     main()
