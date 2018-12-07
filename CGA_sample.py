@@ -1,6 +1,8 @@
 import random
 import sys
 import re
+import time
+import copy
 sys.path.append('/usr/local/lib/python3.6/dist-packages')
 
 from scoop import futures
@@ -16,6 +18,8 @@ max_num_e = [4 for i in range(30)]
 min_num_e = [4 for i in range(30)]
 max_num_n = [3 for i in range(30)]
 min_num_n = [3 for i in range(30)]
+max_num_f = [(25 - (min_num_d[i] + 7)) for i in range(30)]
+min_num_f = [(25 - (max_num_d[i] + 7)) for i in range(30)]
 
 #1-9 = 1,9
 g_1_9 = [1,9]
@@ -160,7 +164,7 @@ class Shift_G(Shift):
             Shift_G.penalty2 += 1
 
 
-all_shift = Shift(max_num_d,min_num_d,max_num_e,min_num_e,max_num_n,min_num_e)
+#all_shift = Shift(max_num_d,min_num_d,max_num_e,min_num_e,max_num_n,min_num_e)
 o_n = Shift_G(max_num_1_9_d,min_num_1_9_d,max_num_1_9_e,min_num_1_9_e,max_num_1_9_n,min_num_1_9_e,g_1_9)
 A = Shift_G(max_num_A_d,min_num_A_d,max_num_A_e,min_num_A_e,max_num_A_n,min_num_A_e,g_A)
 A_SS = Shift_G(max_num_A_SS_d,min_num_A_SS_d,max_num_A_SS_e,min_num_A_SS_e,max_num_A_SS_n,min_num_A_SS_e,g_A_SS)
@@ -172,14 +176,116 @@ B_rq_s = Shift_G(max_num_B_rq_s_d,min_num_B_rq_s_d,max_num_B_rq_s_e,min_num_B_rq
 creator.create("FitnessShift", base.Fitness, weights=(-1.0,))
 creator.create("Individual", list, fitness = creator.FitnessShift)
 
+def Shift_init(pop):
+    day = []
+    for i in range(30):
+        for j in range(25):
+            day.append(pop[j][i])
+            d = day.count(1)
+            e = day.count(2)
+            n = day.count(3)
+            f = day.count(0)
+        while(1):
+            miss = 0
+            if(d > max_num_d[i]):
+                miss += 1
+                if(e < min_num_e[i]):
+                    day[day.index(1)] = 2
+                    d -= 1
+                    e += 1
+                elif(n < min_num_n[i]):
+                    day[day.index(1)] = 3
+                    d -= 1
+                    n += 1
+                elif(f < min_num_f[i]):
+                    day[day.index(1)] = 0
+                    d -= 1
+                    f += 1
+            elif (d < min_num_d[i]):
+                miss += 1
+                if(e > max_num_e[i]):
+                    day[day.index(2)] = 1
+                    d += 1
+                    e -= 1
+                elif(n < min_num_n[i]):
+                    day[day.index(3)] = 1
+                    d += 1
+                    n -= 1
+                elif(f < min_num_f[i]):
+                    day[day.index(0)] = 1
+                    d += 1
+                    f -= 1
+            
+            if(f > max_num_f[i]):
+                miss += 1
+                if(e < min_num_e[i]):
+                    day[day.index(0)] = 2
+                    f -= 1
+                    e += 1
+                elif(n < min_num_n[i]):
+                    day[day.index(0)] = 3
+                    f -= 1
+                    n += 1
+                elif(d < min_num_d[i]):
+                    day[day.index(0)] = 1
+                    f -= 1
+                    d += 1
+            elif(f < min_num_f[i]):
+                miss += 1
+                if(e > max_num_e[i]):
+                    day[day.index(2)] = 0
+                    f += 1
+                    e -= 1
+                elif(n < min_num_n[i]):
+                    day[day.index(3)] = 0
+                    f += 1
+                    n -= 1
+                elif(d < min_num_d[i]):
+                    day[day.index(1)] = 0
+                    f += 1
+                    d -= 1
+            
+            if(e > max_num_e[i]):
+                miss += 1
+                day[day.index(2)] = 3
+                e -= 1
+                n += 1
+            elif(e < min_num_e[i]):
+                miss += 1
+                day[day.index(3)] = 2
+                e += 1
+                n -= 1
+            
+            if(n > max_num_n[i]):
+                miss += 1
+                day[day.index(3)] = 0
+                n -= 1
+                f += 1
+            elif(n < min_num_n[i]):
+                miss += 1
+                day[day.index(0)] = 3
+                n += 1
+                f -= 1
+            
+            
+
+            if(miss == 0):
+                break
+        for s in range(25):
+            pop[s][i] = day[s]
+        day.clear()
+
+    result(pop)
+    return pop
+
 def result(pop):
     d = [0 for i in range(30)]
     e = [0 for i in range(30)]
     n = [0 for i in range(30)]
     f = [0 for i in range(30)]
 
-    for i in range(len(pop)):
-        for j in range(len(pop[i])):
+    for i in range(25):
+        for j in range(30):
             shift = pop[i][j]
             if(shift == 0):
                 f[j] += 1
@@ -194,13 +300,14 @@ def result(pop):
     print(e)
     print(n)
     print(f)
+    print()
 
 def employee_num(pop):
 
     for i in range(len(pop)):
         for j in range(len(pop[i])):
             shift = pop[i][j]
-            all_shift.count(shift,j)
+            #all_shift.count(shift,j)
             A.count(shift,j)
             A_SS.count(shift,j)
             B.count(shift,j)
@@ -210,7 +317,7 @@ def employee_num(pop):
             o_n.count(shift,j)
             
     for j in range(len(pop[i])):
-        all_shift.check(j)
+        #all_shift.check(j)
         A.check(j)
         A_SS.check(j)
         B.check(j)
@@ -219,10 +326,10 @@ def employee_num(pop):
         B_rq_s.check(j)
         o_n.check(j)
 
-    p1 = Shift.penalty1
+    #p1 = Shift.penalty1
     p2 = Shift_G.penalty2
 
-    all_shift.ref()
+    #all_shift.ref()
     A.ref()
     A_SS.ref()
     B.ref()
@@ -231,7 +338,7 @@ def employee_num(pop):
     B_rq_s.ref()
     o_n.ref()
 
-    return p1, p2
+    return p2
 
 def ShiftPattern(pop):
     penalty3 = 0
@@ -245,20 +352,19 @@ def ShiftPattern(pop):
     return penalty3
 
 def cxTwoPoint(pop):
-   
-    size = 30
+    size = 29
     copy1 = creator.Individual()
     copy2 = creator.Individual()
     ind_list = []
     for i in range(50):
-        copy1[:] = pop[:]
-        copy2[:] = pop[:]
+        copy1 = copy.deepcopy(pop)
+        copy2 = copy.deepcopy(pop)
         ind1 = random.randint(0,24)
         ind2 = random.randint(0,23)
         if(ind1 == ind2):
             ind2 += 1
-        cxpoint1 = random.randint(1, size)
-        cxpoint2 = random.randint(1, size - 1)
+        cxpoint1 = random.randint(0, size)
+        cxpoint2 = random.randint(0, size - 1)
         if cxpoint2 >= cxpoint1:
             cxpoint2 += 1
         else: # Swap the two cx points
@@ -266,9 +372,12 @@ def cxTwoPoint(pop):
         
         copy1[ind1][cxpoint1:cxpoint2], copy1[ind2][cxpoint1:cxpoint2] = copy1[ind2][cxpoint1:cxpoint2], copy1[ind1][cxpoint1:cxpoint2]
         ind_list.append(copy1)
-        copy2[ind1][0:cxpoint1], copy2[ind2][cxpoint2:size] = copy2[ind2][0:cxpoint1], copy2[ind1][cxpoint2:size]
+        #result(copy1)
+        copy2[ind1][0:cxpoint1], copy2[ind2][0:cxpoint1] = copy2[ind2][0:cxpoint1], copy2[ind1][0:cxpoint1]
+        copy2[ind1][cxpoint2:size], copy2[ind2][cxpoint2:size] = copy2[ind2][cxpoint2:size], copy2[ind1][cxpoint2:size]
         ind_list.append(copy2)
-        
+        #result(copy2)
+        #print()
     return ind_list
 
 origine = creator.Individual()
@@ -276,11 +385,11 @@ origine = creator.Individual()
 def mut(individual):
     global origine
     if(toolbox.evaluate(individual) < toolbox.evaluate(origine)):
-        ind = individual
+        ind = copy.deepcopy(individual)
     else:
         ind = origine
     origine = individual
-    j = random.randint(1,30)
+    j = random.randint(0,29)
     while(1):
         i = random.randint(0,24)
         k = random.randint(0,24)
@@ -291,10 +400,10 @@ def mut(individual):
     return ind
 
 def evalshift(pop):
-    num1,num2 = employee_num(pop) 
+    num2 = employee_num(pop) 
     num3 = ShiftPattern(pop)
     
-    penalty = num1 + num2 + num3
+    penalty = num2 + num3
 
     return penalty,
 
@@ -309,21 +418,23 @@ toolbox.register("evaluate",evalshift)
 toolbox.register("mate", cxTwoPoint)
 toolbox.register("mutate", mut)
 #toolbox.register("mutate", mut)
-toolbox.register("select", tools.selTournament, tournsize=3)
+#toolbox.register("select", tools.selTournament, tournsize=3)
 
 def main():
     global origine
+    start = time.time()
     pop = toolbox.individual()
     origine = pop
-    NGEN = 1000
+    NGEN = 20 
 
     print("Start of evolution")
     #for i in range(len(pop)):
      #   nurse.append(Employee(i + 1,[],False))
         
 
-    fitness = toolbox.evaluate(pop)
+    pop = Shift_init(pop)
     print(" Evaluating %i individuals" % len(pop))
+    
 
     for g in range(NGEN):
        
@@ -331,29 +442,29 @@ def main():
 
         offspring = pop
         offspring = list(map(toolbox.clone, offspring))
+        #result(offspring)
 
         #for shift in offspring:
            # nurse[j].shift = shift
            # j += 1
 
         ind_list = toolbox.mate(offspring)
-        fitnesses = map(toolbox.evaluate,ind_list)
+        fitnesses = list(map(toolbox.evaluate,ind_list))
 
-        for ind, fit in zip(ind_list, fitnesses):
-            ind.fitness.values = fit
-
-        best_ind = tools.selBest(ind_list, 1)[0]
+        best_ind = ind_list[fitnesses.index(min(fitnesses))]
 
         if(g % 200 == 0):
             best_ind = toolbox.mutate(best_ind)
             origine = best_ind
 
         pop[:] = best_ind
+        #result(best_ind)
         pop.fitness.values = toolbox.evaluate(pop)
 
         fits1 = pop.fitness.values[0]
 
         print("fits1 = %f" % fits1)
+        ind_list.clear()
 
         if(fits1 == 0):
             break
@@ -363,7 +474,10 @@ def main():
     print("Best individual is ")
     for ind in pop:
         print(ind)
+    print(pop.fitness.values[0])
     result(pop)
+    elapsed_time = (time.time() - start) / 60 
+    print("elapsed_time:{0}".format(elapsed_time) + "[min]")
 
 
 if __name__ == '__main__':
