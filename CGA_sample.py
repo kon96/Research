@@ -431,10 +431,8 @@ def main():
     #for i in range(len(pop)):
      #   nurse.append(Employee(i + 1,[],False))
         
-
     pop = Shift_init(pop)
     print(" Evaluating %i individuals" % len(pop))
-    
 
     for g in range(NGEN):
        
@@ -470,7 +468,6 @@ def main():
             break
 
     print("-- End of (successful) evolution --")
-    
     print("Best individual is ")
     for ind in pop:
         print(ind)
