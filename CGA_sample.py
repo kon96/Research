@@ -266,9 +266,7 @@ def Shift_init(pop):
                 day[day.index(0)] = 3
                 n += 1
                 f -= 1
-            
-            
-
+        
             if(miss == 0):
                 break
         for s in range(25):
@@ -343,6 +341,20 @@ def employee_num(pop):
 def ShiftPattern(pop):
     penalty3 = 0
     for ind in pop:
+        d = ind.count(1)
+        e = ind.count(2)
+        n = ind.count(3)
+        f = ind.count(0)
+
+        if(d > 15):
+            penalty3 += 1
+        if(e > 6 or e < 4):
+            penalty3 += 1
+        if(n > 4 or n < 2):
+            penalty3 += 1
+        if(f < 9):
+            penalty3 += 1
+
         map_l = map(str,ind)
         pattern = ''.join(map_l)
         for x in b_shift:
@@ -356,7 +368,7 @@ def cxTwoPoint(pop):
     copy1 = creator.Individual()
     copy2 = creator.Individual()
     ind_list = []
-    for i in range(50):
+    for i in range(100):
         copy1 = copy.deepcopy(pop)
         copy2 = copy.deepcopy(pop)
         ind1 = random.randint(0,24)
@@ -425,11 +437,9 @@ def main():
     start = time.time()
     pop = toolbox.individual()
     origine = pop
-    NGEN = 20 
+    NGEN = 40000 
 
     print("Start of evolution")
-    #for i in range(len(pop)):
-     #   nurse.append(Employee(i + 1,[],False))
         
     pop = Shift_init(pop)
     print(" Evaluating %i individuals" % len(pop))
@@ -440,18 +450,13 @@ def main():
 
         offspring = pop
         offspring = list(map(toolbox.clone, offspring))
-        #result(offspring)
-
-        #for shift in offspring:
-           # nurse[j].shift = shift
-           # j += 1
 
         ind_list = toolbox.mate(offspring)
         fitnesses = list(map(toolbox.evaluate,ind_list))
 
         best_ind = ind_list[fitnesses.index(min(fitnesses))]
 
-        if(g % 200 == 0):
+        if(g % 100 == 0):
             best_ind = toolbox.mutate(best_ind)
             origine = best_ind
 
