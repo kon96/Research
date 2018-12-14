@@ -376,7 +376,7 @@ def evalshift(pop):
     num2 = employee_num(pop) 
     num3 = ShiftPattern(pop)
     
-    penalty = num2 + num3
+    penalty = (num2 * 5) + num3
 
     return penalty,
 
