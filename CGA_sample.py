@@ -107,27 +107,10 @@ class Shift(object):
         self.e_min = e_min
         self.n_max = n_max
         self.n_min = n_min
-        self.d = [0 for i in range(30)]
-        self.e = [0 for i in range(30)]
-        self.n = [0 for i in range(30)]
-        self.f = [0 for i in range(30)]
-    
-    def ref(self):
-        self.d = [0 for i in range(30)]
-        self.e = [0 for i in range(30)]
-        self.n = [0 for i in range(30)]
-        self.f = [0 for i in range(30)]
-        Shift.penalty1 = 0
-    
-    def count(self,shift,j):
-        if(shift == 0):
-            self.f[j] += 1
-        elif(shift == 1):
-            self.d[j] += 1
-        elif(shift == 2):
-            self.e[j] += 1
-        elif(shift == 3):
-            self.n[j] += 1
+        self.d = 0
+        self.e = 0
+        self.n = 0
+        self.f = 0
     
     def check(self,j):
         if(self.d_max[j] < self.d[j] or self.d_min[j] > self.d[j]):
@@ -143,26 +126,45 @@ class Shift_G(Shift):
     def __init__(self,d_max,d_min,e_max,e_min,n_max,n_min,group):
         Shift.__init__(self,d_max,d_min,e_max,e_min,n_max,n_min)
         self.group = group
+        self.shift = []
     
-    def ref(self):
-        self.d = [0 for i in range(30)]
-        self.e = [0 for i in range(30)]
-        self.n = [0 for i in range(30)]
-        self.f = [0 for i in range(30)]
-        Shift_G.penalty2 = 0
+    def check(self,pop):
+        for j in range(30):
+            for i in self.group:
+                self.shift.append(pop[i-1][j])
+                self.d = self.shift.count(1)
+                self.e = self.shift.count(2)
+                self.n = self.shift.count(3)
 
-    def count(self,shift,j):
-        if j in self.group:
-            Shift.count(self,shift,j)
-    
-    def check(self,j):
-        if(self.d_max[j] < self.d[j] or self.d_min[j] > self.d[j]):
-            Shift_G.penalty2 += 1
-        if(self.e_max[j] < self.e[j] or self.e_min[j] > self.e[j]):
-            Shift_G.penalty2 += 1
-        if(self.n_max[j] < self.n[j] or self.n_min[j] > self.n[j]):
-            Shift_G.penalty2 += 1
+            if(self.d_max[j] < self.d or self.d_min[j] > self.d):
+                Shift_G.penalty2 += 1
+            if(self.e_max[j] < self.e or self.e_min[j] > self.e):
+                Shift_G.penalty2 += 1
+            if(self.n_max[j] < self.n or self.n_min[j] > self.n):
+                Shift_G.penalty2 += 1
 
+            self.shift.clear()
+
+    def error(self,pop):
+        enum = 0
+        p2 = []
+        for j in range(30):
+            for i in self.group:
+                self.shift.append(pop[i-1][j])
+                self.d = self.shift.count(1)
+                self.e = self.shift.count(2)
+                self.n = self.shift.count(3)
+
+            if(self.d_max[j] < self.d or self.d_min[j] > self.d):
+                enum += 1
+            if(self.e_max[j] < self.e or self.e_min[j] > self.e):
+                enum += 1
+            if(self.n_max[j] < self.n or self.n_min[j] > self.n):
+                enum += 1
+            p2.append(enum)
+            self.shift.clear()
+            enum = 0
+        return p2
 
 #all_shift = Shift(max_num_d,min_num_d,max_num_e,min_num_e,max_num_n,min_num_e)
 o_n = Shift_G(max_num_1_9_d,min_num_1_9_d,max_num_1_9_e,min_num_1_9_e,max_num_1_9_n,min_num_1_9_e,g_1_9)
@@ -273,68 +275,20 @@ def Shift_init(pop):
             pop[s][i] = day[s]
         day.clear()
 
-    result(pop)
     return pop
 
-def result(pop):
-    d = [0 for i in range(30)]
-    e = [0 for i in range(30)]
-    n = [0 for i in range(30)]
-    f = [0 for i in range(30)]
-
-    for i in range(25):
-        for j in range(30):
-            shift = pop[i][j]
-            if(shift == 0):
-                f[j] += 1
-            elif(shift == 1):
-                d[j] += 1
-            elif(shift == 2):
-                e[j] += 1
-            elif(shift == 3):
-                n[j] += 1
-
-    print(d) 
-    print(e)
-    print(n)
-    print(f)
-    print()
-
 def employee_num(pop):
-
-    for i in range(len(pop)):
-        for j in range(len(pop[i])):
-            shift = pop[i][j]
-            #all_shift.count(shift,j)
-            A.count(shift,j)
-            A_SS.count(shift,j)
-            B.count(shift,j)
-            B_SS.count(shift,j)
-            B_SS_s.count(shift,j)
-            B_rq_s.count(shift,j)
-            o_n.count(shift,j)
             
-    for j in range(len(pop[i])):
-        #all_shift.check(j)
-        A.check(j)
-        A_SS.check(j)
-        B.check(j)
-        B_SS.check(j)
-        B_SS_s.check(j)
-        B_rq_s.check(j)
-        o_n.check(j)
+    A.check(pop)
+    A_SS.check(pop)
+    B.check(pop)
+    B_SS.check(pop)
+    B_SS_s.check(pop)
+    B_rq_s.check(pop)
+    o_n.check(pop)
 
-    #p1 = Shift.penalty1
     p2 = Shift_G.penalty2
-
-    #all_shift.ref()
-    A.ref()
-    A_SS.ref()
-    B.ref()
-    B_SS.ref()
-    B_SS_s.ref()
-    B_rq_s.ref()
-    o_n.ref()
+    Shift_G.penalty2 = 0
 
     return p2
 
@@ -384,24 +338,31 @@ def cxTwoPoint(pop):
         
         copy1[ind1][cxpoint1:cxpoint2], copy1[ind2][cxpoint1:cxpoint2] = copy1[ind2][cxpoint1:cxpoint2], copy1[ind1][cxpoint1:cxpoint2]
         ind_list.append(copy1)
-        #result(copy1)
         copy2[ind1][0:cxpoint1], copy2[ind2][0:cxpoint1] = copy2[ind2][0:cxpoint1], copy2[ind1][0:cxpoint1]
         copy2[ind1][cxpoint2:size], copy2[ind2][cxpoint2:size] = copy2[ind2][cxpoint2:size], copy2[ind1][cxpoint2:size]
         ind_list.append(copy2)
-        #result(copy2)
-        #print()
+
     return ind_list
 
 origine = creator.Individual()
 
 def mut(individual):
     global origine
-    if(toolbox.evaluate(individual) < toolbox.evaluate(origine)):
+
+    x = evalshift(individual)
+    y = evalshift(origine)
+
+    if(x[0] < y[0]):
         ind = copy.deepcopy(individual)
+    elif(x[0] > y[0]):
+        ind = copy.deepcopy(origine)
     else:
-        ind = origine
-    origine = individual
+        ind = copy.deepcopy(individual)
+
+    origine = ind
+
     j = random.randint(0,29)
+
     while(1):
         i = random.randint(0,24)
         k = random.randint(0,24)
@@ -418,6 +379,52 @@ def evalshift(pop):
     penalty = num2 + num3
 
     return penalty,
+
+def result(pop):
+    g1 = A.error(pop)
+    g2 = A_SS.error(pop)
+    g3 = B.error(pop)
+    g4 = B_SS.error(pop)
+    g5 = B_SS_s.error(pop)
+    g6 = B_rq_s.error(pop)
+    g7 = o_n.error(pop)
+
+    p3 = []
+    for i,ind in enumerate(pop):
+        d = ind.count(1)
+        e = ind.count(2)
+        n = ind.count(3)
+        f = ind.count(0)
+        p3.append(str(i))
+        p3.append(str(d))
+        p3.append(str(e))
+        p3.append(str(n))
+        p3.append(str(f))
+
+        map_l = map(str,ind)
+        pattern = ''.join(map_l)
+        for x in b_shift:
+            y = re.findall(x,pattern)
+            p3.append(y)
+            p3.append(str(len(y)))
+        print(p3)
+        p3.clear()
+    
+    print("g1:",end = "")
+    print(g1)
+    print("g2:",end = "")
+    print(g2)
+    print("g3:",end = "")
+    print(g3)
+    print("g4:",end = "")
+    print(g4)
+    print("g5:",end = "")
+    print(g5)
+    print("g6:",end = "")
+    print(g6)
+    print("g7:",end = "")
+    print(g7)
+        
 
 toolbox = base.Toolbox()
 toolbox.register("map", futures.map)
@@ -436,12 +443,14 @@ def main():
     global origine
     start = time.time()
     pop = toolbox.individual()
-    origine = pop
-    NGEN = 40000 
+    NGEN = 500
 
     print("Start of evolution")
         
     pop = Shift_init(pop)
+    origine = pop
+    result(pop)
+
     print(" Evaluating %i individuals" % len(pop))
 
     for g in range(NGEN):
@@ -452,16 +461,14 @@ def main():
         offspring = list(map(toolbox.clone, offspring))
 
         ind_list = toolbox.mate(offspring)
-        fitnesses = list(map(toolbox.evaluate,ind_list))
+        fitnesses = list(map(evalshift,ind_list))
 
         best_ind = ind_list[fitnesses.index(min(fitnesses))]
-
+        
         if(g % 100 == 0):
             best_ind = toolbox.mutate(best_ind)
-            origine = best_ind
 
         pop[:] = best_ind
-        #result(best_ind)
         pop.fitness.values = toolbox.evaluate(pop)
 
         fits1 = pop.fitness.values[0]
