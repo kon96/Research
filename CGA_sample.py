@@ -3,6 +3,7 @@ import sys
 import re
 import time
 import copy
+import numpy as np
 sys.path.append('/usr/local/lib/python3.6/dist-packages')
 
 from scoop import futures
@@ -92,15 +93,10 @@ b_shift = ['[0][1-3][0]','[1-3]{7}','[0]{6}','[1]{8}',
            '[3][0][1]'
 ]
 
-class Employee(object):
-  def __init__(self, no, shift, manager):
-    self.no = no
-    self.manager = manager
-    self.shift = shift
+class Shift_G(object):
+    penalty2 = 0
 
-class Shift(object):
-    penalty1 = 0
-    def __init__(self,d_max,d_min,e_max,e_min,n_max,n_min):
+    def __init__(self,d_max,d_min,e_max,e_min,n_max,n_min,group):
         self.d_max = d_max
         self.d_min = d_min
         self.e_max = e_max
@@ -111,20 +107,6 @@ class Shift(object):
         self.e = 0
         self.n = 0
         self.f = 0
-    
-    def check(self,j):
-        if(self.d_max[j] < self.d[j] or self.d_min[j] > self.d[j]):
-            Shift.penalty1 += 1
-        if(self.e_max[j] < self.e[j] or self.e_min[j] > self.e[j]):
-            Shift.penalty1 += 1
-        if(self.n_max[j] < self.n[j] or self.n_min[j] > self.n[j]):
-            Shift.penalty1 += 1
-
-class Shift_G(Shift):
-    penalty2 = 0
-
-    def __init__(self,d_max,d_min,e_max,e_min,n_max,n_min,group):
-        Shift.__init__(self,d_max,d_min,e_max,e_min,n_max,n_min)
         self.group = group
         self.shift = []
     
@@ -301,13 +283,13 @@ def ShiftPattern(pop):
         f = ind.count(0)
 
         if(d > 15):
-            penalty3 += 1
+            penalty3 += 2
         if(e > 6 or e < 4):
-            penalty3 += 1
+            penalty3 += 2
         if(n > 4 or n < 2):
-            penalty3 += 1
+            penalty3 += 2
         if(f < 9):
-            penalty3 += 1
+            penalty3 += 2
 
         map_l = map(str,ind)
         pattern = ''.join(map_l)
@@ -372,15 +354,23 @@ def mut(individual):
 
     return ind
 
-def evalshift(pop):
+def cal_p(pop): 
     num2 = employee_num(pop) 
     num3 = ShiftPattern(pop)
     
     penalty = (num2 * 5) + num3
 
+    return penalty
+
+def evalshift(pop):
+    penalty = cal_p(pop)
     return penalty,
 
 def result(pop):
+    for ind in pop:
+        print(ind)
+    print(pop.fitness.values[0])
+
     g1 = A.error(pop)
     g2 = A_SS.error(pop)
     g3 = B.error(pop)
@@ -390,6 +380,7 @@ def result(pop):
     g7 = o_n.error(pop)
 
     p3 = []
+
     for i,ind in enumerate(pop):
         d = ind.count(1)
         e = ind.count(2)
@@ -424,7 +415,6 @@ def result(pop):
     print(g6)
     print("g7:",end = "")
     print(g7)
-        
 
 toolbox = base.Toolbox()
 toolbox.register("map", futures.map)
@@ -443,11 +433,12 @@ def main():
     global origine
     start = time.time()
     pop = toolbox.individual()
-    NGEN = 500
+    NGEN = 30000
 
     print("Start of evolution")
         
     pop = Shift_init(pop)
+    pop.fitness.values = toolbox.evaluate(pop)
     origine = pop
     result(pop)
 
@@ -461,9 +452,11 @@ def main():
         offspring = list(map(toolbox.clone, offspring))
 
         ind_list = toolbox.mate(offspring)
-        fitnesses = list(map(evalshift,ind_list))
+        fitnesses = list(map(cal_p,ind_list))
 
-        best_ind = ind_list[fitnesses.index(min(fitnesses))]
+        i = fitnesses.index(min(fitnesses))
+
+        best_ind = ind_list[i]
         
         if(g % 100 == 0):
             best_ind = toolbox.mutate(best_ind)
@@ -481,11 +474,8 @@ def main():
 
     print("-- End of (successful) evolution --")
     print("Best individual is ")
-    for ind in pop:
-        print(ind)
-    print(pop.fitness.values[0])
     result(pop)
-    elapsed_time = (time.time() - start) / 60 
+    elapsed_time = (time.time() - start) / 3600 
     print("elapsed_time:{0}".format(elapsed_time) + "[min]")
 
 
