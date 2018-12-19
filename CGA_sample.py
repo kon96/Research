@@ -11,6 +11,7 @@ from deap import base
 from deap import creator
 from deap import tools
 from deap import cma
+from itertools import zip_longest
 
 #ALL
 max_num_d = [11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,18,11,11,11,11,11,11,11]
@@ -88,43 +89,43 @@ min_num_B_n = [1 for i in range(30)]
 #勤務希望
 request = [ 
     [],
-    [2,9,18,],
-    [2],
-    [11,12,25,26],
-    [22,23,24,25],
-    [16,17],
+    [1,8,17,],
     [1],
-    [25,26],
-    [1,12,23],
+    [10,11,24,25],
+    [21,22,23,24],
+    [15,16],
+    [0],
+    [24,25],
+    [0,11,22],
     [],
-    [9],
-    [7,8,9],
-    [8,9,10,23,24,25],
-    [11,12,13,27],
-    [18],
-    [20],
-    [20,21],
-    [1,10,11],
-    [23,24,25,26],
-    [9,18,19],
     [8],
-    [9],
-    [9,10],
-    [2,3,25,26],
+    [6,7,8],
+    [7,8,8,22,23,24],
+    [10,11,12,26],
+    [17],
+    [19],
+    [19,20],
+    [0,9,10],
+    [22,23,24,25],
+    [8,17,18],
+    [7],
+    [8],
+    [8,9],
+    [1,2,24,25],
     []
 ]
 
 #その他の勤務
 other = [
-    [],[13],[],[20],[],[],[],[10],[],[1,16],[16],[16],[7],[10],[],[13,21],[13],[20],[7,16],[30],[30],[1,30],[30],[],[]
+    [],[12],[],[19],[],[],[],[9],[],[0,15],[15],[15],[6],[9],[],[12,20],[12],[19],[6,15],[29],[29],[0,29],[29],[],[]
 ]
 
 #禁止勤務パターン
-b_shift = ['[0][1-3][0]','[1-3]{7}','[0]{6}','[1]{8}',
-           '[3][0-3][3]','[3][0-3]{2}[3]','[3][0-3]{3}[3]',
-           '[3][0-3]{4}[3]','[3][0-3]{5}[3]','[3]{3}',
+b_shift = ['[0|5][1-4][0|5]','[1-4]{7}','[0|5]{6}','[1]{8}',
+           '[3][0-5][3]','[3][0-5]{2}[3]','[3][0-5]{3}[3]',
+           '[3][0-5]{4}[3]','[3][0-5]{5}[3]','[3]{3}',
            '[1]{5}','[2]{4}','[3][1]','[3][2]','[2][1]',
-           '[3][0][1]'
+           '[3][0|5][1]'
 ]
 
 
@@ -132,30 +133,30 @@ class Nurse(object):
 
     def __init__(self,no,request,other):
         self.no = no
-        self.reauest = request
+        self.request = request
         self.other = other
         self.shift = []
         for i in range(30):
             self.shift.append(random.randint(0,3))
 
     def req_init(self):
-        for i in self.reauest:
+        for i in self.request:
             if not i:
                 pass
             else:
-                self.shift[i-1] = 0
+                self.shift[i] = 5
         for j in self.other:
             if not j:
                 pass
             else:
-                self.shift[j-1] = 4
+                self.shift[j] = 4
     
     def check(self):
         penalty = 0
         d = self.shift.count(1)
         e = self.shift.count(2)
         n = self.shift.count(3)
-        f = self.shift.count(0)
+        f = self.shift.count(0) + self.shift.count(5)
 
         if(d > 15):
             penalty += 2
@@ -243,13 +244,18 @@ creator.create("Individual", list, fitness = creator.FitnessShift)
 
 def Shift_init(pop):
     day = []
+    for ind in pop:
+        ind.req_init()
     for i in range(30):
         for j in range(25):
             day.append(pop[j].shift[i])
-            d = day.count(1)
-            e = day.count(2)
-            n = day.count(3)
-            f = day.count(0)
+        d = day.count(1)
+        e = day.count(2)
+        n = day.count(3)
+        f = day.count(0) + day.count(5)
+        o = day.count(4)
+        max_num_f[i] -= o
+        min_num_f[i] -= o 
         while(1):
             miss = 0
             if(d > max_num_d[i]):
@@ -272,11 +278,11 @@ def Shift_init(pop):
                     day[day.index(2)] = 1
                     d += 1
                     e -= 1
-                elif(n < min_num_n[i]):
+                elif(n > max_num_n[i]):
                     day[day.index(3)] = 1
                     d += 1
                     n -= 1
-                elif(f < min_num_f[i]):
+                elif(f > min_num_f[i]):
                     day[day.index(0)] = 1
                     d += 1
                     f -= 1
@@ -301,11 +307,11 @@ def Shift_init(pop):
                     day[day.index(2)] = 0
                     f += 1
                     e -= 1
-                elif(n < min_num_n[i]):
+                elif(n > max_num_n[i]):
                     day[day.index(3)] = 0
                     f += 1
                     n -= 1
-                elif(d < min_num_d[i]):
+                elif(d > min_num_d[i]):
                     day[day.index(1)] = 0
                     f += 1
                     d -= 1
@@ -364,6 +370,7 @@ def ShiftPattern(pop):
 
 def cxTwoPoint(pop):
     size = 29
+    excluded = []
     copy1 = creator.Individual()
     copy2 = creator.Individual()
     ind_list = []
@@ -376,15 +383,37 @@ def cxTwoPoint(pop):
             ind2 += 1
         cxpoint1 = random.randint(0, size)
         cxpoint2 = random.randint(0, size - 1)
-        if cxpoint2 >= cxpoint1:
-            cxpoint2 += 1
+        if(cxpoint2 >= cxpoint1):
+             cxpoint2 += 1
         else: # Swap the two cx points
             cxpoint1, cxpoint2 = cxpoint2, cxpoint1
+       
+        excluded.extend(pop[ind1].request)
+        excluded.extend(pop[ind2].request)
+        excluded.extend(pop[ind1].other)
+        excluded.extend(pop[ind2].other)
+
+        for s in range(30):
+            if(s  not in excluded):
+                if(s < cxpoint1):
+                    copy2[ind1].shift[s],copy2[ind2].shift = copy2[ind2].shift[s],copy2[ind1].shift
+                elif(s == cxpoint1):
+                    copy2[ind1].shift[s],copy2[ind2].shift = copy2[ind2].shift[s],copy2[ind1].shift
+                    copy1[ind1].shift[s],copy1[ind2].shift = copy1[ind2].shift[s],copy1[ind1].shift
+                elif(s > cxpoint1 and s < cxpoint2):
+                    copy1[ind1].shift[s],copy1[ind2].shift = copy1[ind2].shift[s],copy1[ind1].shift
+                elif(s == cxpoint2):
+                    copy2[ind1].shift[s],copy2[ind2].shift = copy2[ind2].shift[s],copy2[ind1].shift
+                    copy1[ind1].shift[s],copy1[ind2].shift = copy1[ind2].shift[s],copy1[ind1].shift
+                elif(s > cxpoint2):
+                    copy2[ind1].shift[s],copy2[ind2].shift = copy2[ind2].shift[s],copy2[ind1].shift
         
-        copy1[ind1].shift[cxpoint1:cxpoint2], copy1[ind2].shift[cxpoint1:cxpoint2] = copy1[ind2].shift[cxpoint1:cxpoint2], copy1[ind1].shift[cxpoint1:cxpoint2]
+        excluded.clear()
+
+        #copy1[ind1].shift[cxpoint1:cxpoint2], copy1[ind2].shift[cxpoint1:cxpoint2] = copy1[ind2].shift[cxpoint1:cxpoint2], copy1[ind1].shift[cxpoint1:cxpoint2]
         ind_list.append(copy1)
-        copy2[ind1].shift[0:cxpoint1], copy2[ind2].shift[0:cxpoint1] = copy2[ind2].shift[0:cxpoint1], copy2[ind1].shift[0:cxpoint1]
-        copy2[ind1].shift[cxpoint2:size], copy2[ind2].shift[cxpoint2:size] = copy2[ind2].shift[cxpoint2:size], copy2[ind1].shift[cxpoint2:size]
+        #copy2[ind1].shift[0:cxpoint1+1], copy2[ind2].shift[0:cxpoint1] = copy2[ind2].shift[0:cxpoint1], copy2[ind1].shift[0:cxpoint1]
+        #copy2[ind1].shift[cxpoint2:size], copy2[ind2].shift[cxpoint2:size] = copy2[ind2].shift[cxpoint2:size], copy2[ind1].shift[cxpoint2:size]
         ind_list.append(copy2)
 
     return ind_list
