@@ -193,9 +193,9 @@ class Shift_G(object):
         for j in range(30):
             for i in self.group:
                 self.shift.append(pop[i-1].shift[j])
-                self.d = self.shift.count(1)
-                self.e = self.shift.count(2)
-                self.n = self.shift.count(3)
+            self.d = self.shift.count(1)
+            self.e = self.shift.count(2)
+            self.n = self.shift.count(3)
 
             if(self.d_max[j] < self.d or self.d_min[j] > self.d):
                 Shift_G.penalty2 += 1
@@ -212,9 +212,9 @@ class Shift_G(object):
         for j in range(30):
             for i in self.group:
                 self.shift.append(pop[i-1].shift[j])
-                self.d = self.shift.count(1)
-                self.e = self.shift.count(2)
-                self.n = self.shift.count(3)
+            self.d = self.shift.count(1)
+            self.e = self.shift.count(2)
+            self.n = self.shift.count(3)
 
             if(self.d_max[j] < self.d or self.d_min[j] > self.d):
                 enum += 1
@@ -474,7 +474,7 @@ def result(pop):
         d = ind.shift.count(1)
         e = ind.shift.count(2)
         n = ind.shift.count(3)
-        f = ind.shift.count(0)
+        f = ind.shift.count(0) + ind.shift.count(5)
         p3.append(str(i))
         p3.append(str(d))
         p3.append(str(e))
