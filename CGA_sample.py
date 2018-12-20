@@ -89,7 +89,7 @@ min_num_B_n = [1 for i in range(30)]
 #勤務希望
 request = [ 
     [],
-    [1,8,17,],
+    [1,8,17],
     [1],
     [10,11,24,25],
     [21,22,23,24],
@@ -100,7 +100,7 @@ request = [
     [],
     [8],
     [6,7,8],
-    [7,8,8,22,23,24],
+    [8,9,10,24,25,26],
     [10,11,12,26],
     [17],
     [19],
@@ -140,15 +140,12 @@ class Nurse(object):
             self.shift.append(random.randint(0,3))
 
     def req_init(self):
-        for i in self.request:
-            if not i:
-                pass
-            else:
+        if(len(self.request) != 0):
+            for i in self.request:
                 self.shift[i] = 5
-        for j in self.other:
-            if not j:
-                pass
-            else:
+
+        if(len(self.other) != 0):
+            for j in self.other:
                 self.shift[j] = 4
     
     def check(self):
@@ -532,7 +529,7 @@ def main():
     start = time.time()
     pop = creator.Individual()
     pop = create_pop(pop)
-    NGEN = 3000
+    NGEN = 1000
     m = 20
     c = 0
 
