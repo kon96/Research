@@ -393,17 +393,17 @@ def cxTwoPoint(pop):
         for s in range(30):
             if(s  not in excluded):
                 if(s < cxpoint1):
-                    copy2[ind1].shift[s],copy2[ind2].shift = copy2[ind2].shift[s],copy2[ind1].shift
+                    copy2[ind1].shift[s],copy2[ind2].shift[s] = copy2[ind2].shift[s],copy2[ind1].shift[s]
                 elif(s == cxpoint1):
-                    copy2[ind1].shift[s],copy2[ind2].shift = copy2[ind2].shift[s],copy2[ind1].shift
-                    copy1[ind1].shift[s],copy1[ind2].shift = copy1[ind2].shift[s],copy1[ind1].shift
+                    copy2[ind1].shift[s],copy2[ind2].shift[s] = copy2[ind2].shift[s],copy2[ind1].shift[s]
+                    copy1[ind1].shift[s],copy1[ind2].shift[s] = copy1[ind2].shift[s],copy1[ind1].shift[s]
                 elif(s > cxpoint1 and s < cxpoint2):
-                    copy1[ind1].shift[s],copy1[ind2].shift = copy1[ind2].shift[s],copy1[ind1].shift
+                    copy1[ind1].shift[s],copy1[ind2].shift[s] = copy1[ind2].shift[s],copy1[ind1].shift[s]
                 elif(s == cxpoint2):
-                    copy2[ind1].shift[s],copy2[ind2].shift = copy2[ind2].shift[s],copy2[ind1].shift
-                    copy1[ind1].shift[s],copy1[ind2].shift = copy1[ind2].shift[s],copy1[ind1].shift
+                    copy2[ind1].shift[s],copy2[ind2].shift[s] = copy2[ind2].shift[s],copy2[ind1].shift[s]
+                    copy1[ind1].shift[s],copy1[ind2].shift[s] = copy1[ind2].shift[s],copy1[ind1].shift[s]
                 elif(s > cxpoint2):
-                    copy2[ind1].shift[s],copy2[ind2].shift = copy2[ind2].shift[s],copy2[ind1].shift
+                    copy2[ind1].shift[s],copy2[ind2].shift[s] = copy2[ind2].shift[s],copy2[ind1].shift[s]
         
         excluded.clear()
 
