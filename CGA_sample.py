@@ -156,13 +156,13 @@ class Nurse(object):
         f = self.shift.count(0) + self.shift.count(5)
 
         if(d > 15):
-            penalty += 2
+            penalty += 1
         if(e > 6 or e < 4):
-            penalty += 2
+            penalty += 1
         if(n > 4 or n < 2):
-            penalty += 2
+            penalty += 1
         if(f < 9):
-            penalty += 2
+            penalty += 1
 
         map_l = map(str,self.shift)
         pattern = ''.join(map_l)
@@ -229,12 +229,12 @@ class Shift_G(object):
 
 #all_shift = Shift(max_num_d,min_num_d,max_num_e,min_num_e,max_num_n,min_num_e)
 o_n = Shift_G(max_num_1_9_d,min_num_1_9_d,max_num_1_9_e,min_num_1_9_e,max_num_1_9_n,min_num_1_9_e,g_1_9)
-A = Shift_G(max_num_A_d,min_num_A_d,max_num_A_e,min_num_A_e,max_num_A_n,min_num_A_e,g_A)
+A = Shift_G(max_num_A_d,min_num_A_d,max_num_A_e,min_num_A_e,max_num_A_n,min_num_A_n,g_A)
 A_SS = Shift_G(max_num_A_SS_d,min_num_A_SS_d,max_num_A_SS_e,min_num_A_SS_e,max_num_A_SS_n,min_num_A_SS_e,g_A_SS)
-B = Shift_G(max_num_B_d,min_num_B_d,max_num_B_e,min_num_B_e,max_num_B_n,min_num_B_e,g_B)
-B_SS = Shift_G(max_num_B_SS_d,min_num_B_SS_d,max_num_B_SS_e,min_num_B_SS_e,max_num_B_SS_n,min_num_B_SS_e,g_B_SS)
-B_SS_s = Shift_G(max_num_B_SS_s_d,min_num_B_SS_s_d,max_num_B_SS_s_e,min_num_B_SS_s_e,max_num_B_SS_s_n,min_num_B_SS_s_e,g_B_SS_s)
-B_rq_s = Shift_G(max_num_B_rq_s_d,min_num_B_rq_s_d,max_num_B_rq_s_e,min_num_B_rq_s_e,max_num_B_rq_s_n,min_num_B_rq_s_e,g_B_rq_s)
+B = Shift_G(max_num_B_d,min_num_B_d,max_num_B_e,min_num_B_e,max_num_B_n,min_num_B_n,g_B)
+B_SS = Shift_G(max_num_B_SS_d,min_num_B_SS_d,max_num_B_SS_e,min_num_B_SS_e,max_num_B_SS_n,min_num_B_SS_n,g_B_SS)
+B_SS_s = Shift_G(max_num_B_SS_s_d,min_num_B_SS_s_d,max_num_B_SS_s_e,min_num_B_SS_s_e,max_num_B_SS_s_n,min_num_B_SS_s_n,g_B_SS_s)
+B_rq_s = Shift_G(max_num_B_rq_s_d,min_num_B_rq_s_d,max_num_B_rq_s_e,min_num_B_rq_s_e,max_num_B_rq_s_n,min_num_B_rq_s_n,g_B_rq_s)
 
 creator.create("FitnessShift", base.Fitness, weights=(-1.0,))
 creator.create("Individual", list, fitness = creator.FitnessShift)
@@ -417,11 +417,15 @@ def cxTwoPoint(pop):
 
 origine = creator.Individual()
 
+def my_index_multi(l, x):
+    return [i for i, _x in enumerate(l) if _x == x]
+
 def mut(individual):
     global origine
 
     x = evalshift(individual)
     y = evalshift(origine)
+    day = []
 
     if(x[0] < y[0]):
         ind = copy.deepcopy(individual)
@@ -441,13 +445,27 @@ def mut(individual):
             break
     ind[i].shift[j],ind[k].shift[j] = ind[k].shift[j],ind[i].shift[j] 
 
+    for s in ind:
+        day.append(s.shift[j])
+
+    d = day.count(1)
+    f = day.count(0) + day.count(5)
+     
+    for r in range(2):
+        if(r == 0 and f > min_num_f[j] and f <= max_num_f[j] and (d + 1) <= max_num_d[j]):
+            ind[my_index_multi(day,0)[random.randint(0,len(my_index_multi(day,0)))-1]].shift[j] = 1
+            break
+        elif(r == 1 and d > min_num_d[j] and d <= max_num_d[j] and (f + 1) <= max_num_f[j]):
+            ind[my_index_multi(day,1)[random.randint(0,len(my_index_multi(day,1)))-1]].shift[j] = 0
+            break
+
     return ind
 
 def cal_p(pop): 
     num2 = employee_num(pop) 
     num3 = ShiftPattern(pop)
     
-    penalty = (num2 * 5) + num3
+    penalty = num2 + num3
 
     return penalty
 
@@ -456,9 +474,29 @@ def evalshift(pop):
     return penalty,
 
 def result(pop):
+    day = []
+    d = [0 for i in range(30)]
+    e = [0 for i in range(30)]
+    n = [0 for i in range(30)]
+    f = [0 for i in range(30)]
     for ind in pop:
         print(ind.shift)
     print(pop.fitness.values[0])
+    print()
+
+    for j in range(30):
+        for s in pop:
+            day.append(s.shift[j])
+        d[j] = day.count(1)
+        e[j] = day.count(2)
+        n[j] = day.count(3)
+        f[j] = day.count(0) + day.count(5)
+        day.clear()
+
+    print(d)
+    print(e)
+    print(n)
+    print(f)
 
     g1 = A.error(pop)
     g2 = A_SS.error(pop)
@@ -529,7 +567,7 @@ def main():
     start = time.time()
     pop = creator.Individual()
     pop = create_pop(pop)
-    NGEN = 1000
+    NGEN = 4000
     m = 20
     c = 0
 
