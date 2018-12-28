@@ -456,15 +456,18 @@ def mut(individual):
     d = day.count(1)
     f = day.count(0) + day.count(5)
     count = 0
+
+    f_list = my_index_multi(day,0)
+    d_list = my_index_multi(day,1)
      
     while(1):
         count += 1
         r = random.randint(0,1)
         if(r == 0 and f > min_num_f[j] and f <= max_num_f[j] and (d + 1) <= max_num_d[j]):
-            ind[my_index_multi(day,0)[random.randint(0,len(my_index_multi(day,0)))-1]].shift[j] = 1
+            ind[f_list[random.randint(0,len(f_list)-1]].shift[j] = 1
             break
         elif(r == 1 and d > min_num_d[j] and d <= max_num_d[j] and (f + 1) <= max_num_f[j]):
-            ind[my_index_multi(day,1)[random.randint(0,len(my_index_multi(day,1)))-1]].shift[j] = 0
+            ind[d_list[random.randint(0,len(d_list)-1]].shift[j] = 0
             break
         elif(count == 10):
             break
