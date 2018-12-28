@@ -475,9 +475,16 @@ def cal_p(pop):
     num2 = employee_num(pop) 
     num3 = ShiftPattern(pop)
     
-    penalty = num2 + num3
+    penalty = num2 + (num3 * 3)
 
     return penalty
+
+def cal_enum(pop):
+    num2 = employee_num(pop) 
+    num3 = ShiftPattern(pop)
+
+    return num2,num3
+
 
 def evalshift(pop):
     penalty = cal_p(pop)
@@ -580,7 +587,7 @@ def main():
     start = time.time()
     pop = creator.Individual()
     pop = create_pop(pop)
-    NGEN = 100000
+    NGEN = 1000
     m = 10
     c = 0
 
@@ -610,7 +617,7 @@ def main():
         if(g % m == 0):
             best_ind = toolbox.mutate(best_ind)
             c += 1
-            if(c == 15):
+            if(c == 30):
                 m += 20
                 c = 0
 
@@ -618,8 +625,10 @@ def main():
         pop.fitness.values = toolbox.evaluate(pop)
 
         fits1 = pop.fitness.values[0]
-
+        num2,num3 = cal_enum(pop)
         print("fits1 = %f" % fits1)
+        print("enum2 = %f" % num2)
+        print("enum3 = %f" % num3)
         ind_list.clear()
 
         if(fits1 == 0):
