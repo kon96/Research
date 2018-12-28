@@ -446,7 +446,7 @@ def mut(individual):
     while(1):
         i = random.randint(0,24)
         k = random.randint(0,24)
-        if(i != k):
+        if(i != k and ind[i].shift[j] != 4 and ind[i].shift[j] != 5 and ind[k].shift[j] != 4 and ind[k].shift[j] != 5):
             break
     ind[i].shift[j],ind[k].shift[j] = ind[k].shift[j],ind[i].shift[j] 
 
