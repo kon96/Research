@@ -465,7 +465,7 @@ def cal_p(pop):
     num2 = employee_num(pop) 
     num3 = ShiftPattern(pop)
     
-    penalty = num2 + num3
+    penalty = num2 + (num3 * 3)
 
     return penalty
 
@@ -597,7 +597,7 @@ def main():
         if(g % m == 0):
             best_ind = toolbox.mutate(best_ind)
             c += 1
-            if(c == 10):
+            if(c == 200):
                 m += 20
 
         pop[:] = best_ind
