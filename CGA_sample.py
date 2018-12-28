@@ -14,6 +14,7 @@ from deap import cma
 from itertools import zip_longest
 
 #ALL
+all_employees = [i for i in range(1,26)]
 max_num_d = [11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,18,11,11,11,11,11,11,11]
 min_num_d = [8,8,8,8,7,8,8,8,7,7,7,7,7,8,8,8,8,8,7,8,8,8,13,8,8,7,8,8,8,8]
 max_num_e = [4 for i in range(30)]
@@ -163,6 +164,10 @@ class Nurse(object):
             penalty += 1
         if(f < 9):
             penalty += 1
+        for i in self.other:
+            if(self.shift[i] != 4):
+                penalty += 5
+        
 
         map_l = map(str,self.shift)
         pattern = ''.join(map_l)
@@ -227,7 +232,7 @@ class Shift_G(object):
             enum = 0
         return p2
 
-#all_shift = Shift(max_num_d,min_num_d,max_num_e,min_num_e,max_num_n,min_num_e)
+all_shift = Shift_G(max_num_d,min_num_d,max_num_e,min_num_e,max_num_n,min_num_n,all_employees)
 o_n = Shift_G(max_num_1_9_d,min_num_1_9_d,max_num_1_9_e,min_num_1_9_e,max_num_1_9_n,min_num_1_9_e,g_1_9)
 A = Shift_G(max_num_A_d,min_num_A_d,max_num_A_e,min_num_A_e,max_num_A_n,min_num_A_n,g_A)
 A_SS = Shift_G(max_num_A_SS_d,min_num_A_SS_d,max_num_A_SS_e,min_num_A_SS_e,max_num_A_SS_n,min_num_A_SS_e,g_A_SS)
@@ -344,7 +349,7 @@ def Shift_init(pop):
     return pop
 
 def employee_num(pop):
-            
+    all_shift.check(pop)
     A.check(pop)
     A_SS.check(pop)
     B.check(pop)
@@ -450,13 +455,21 @@ def mut(individual):
 
     d = day.count(1)
     f = day.count(0) + day.count(5)
+    count = 0
+
+    f_list = my_index_multi(day,0)
+    d_list = my_index_multi(day,1)
      
-    for r in range(2):
+    while(1):
+        count += 1
+        r = random.randint(0,1)
         if(r == 0 and f > min_num_f[j] and f <= max_num_f[j] and (d + 1) <= max_num_d[j]):
-            ind[my_index_multi(day,0)[random.randint(0,len(my_index_multi(day,0)))-1]].shift[j] = 1
+            ind[f_list[random.randint(0,len(f_list) - 1)]].shift[j] = 1
             break
         elif(r == 1 and d > min_num_d[j] and d <= max_num_d[j] and (f + 1) <= max_num_f[j]):
-            ind[my_index_multi(day,1)[random.randint(0,len(my_index_multi(day,1)))-1]].shift[j] = 0
+            ind[d_list[random.randint(0,len(d_list) - 1)]].shift[j] = 0
+            break
+        elif(count == 10):
             break
 
     return ind
@@ -468,6 +481,13 @@ def cal_p(pop):
     penalty = num2 + (num3 * 3)
 
     return penalty
+
+def cal_enum(pop):
+    num2 = employee_num(pop) 
+    num3 = ShiftPattern(pop)
+
+    return num2,num3
+
 
 def evalshift(pop):
     penalty = cal_p(pop)
@@ -505,6 +525,7 @@ def result(pop):
     g5 = B_SS_s.error(pop)
     g6 = B_rq_s.error(pop)
     g7 = o_n.error(pop)
+    g8 = all_shift.error(pop)
 
     p3 = []
 
@@ -542,6 +563,8 @@ def result(pop):
     print(g6)
     print("g7:",end = "")
     print(g7)
+    print("g8:",end = "")
+    print(g8)
 
 def create_pop(pop):
     for i in range(25):
@@ -567,8 +590,8 @@ def main():
     start = time.time()
     pop = creator.Individual()
     pop = create_pop(pop)
-    NGEN = 4000
-    m = 20
+    NGEN = 5000
+    m = 10
     c = 0
 
     print("Start of evolution")
@@ -597,15 +620,18 @@ def main():
         if(g % m == 0):
             best_ind = toolbox.mutate(best_ind)
             c += 1
-            if(c == 200):
+            if(c == 40):
                 m += 20
+                c = 0
 
         pop[:] = best_ind
         pop.fitness.values = toolbox.evaluate(pop)
 
         fits1 = pop.fitness.values[0]
-
+        num2,num3 = cal_enum(pop)
         print("fits1 = %f" % fits1)
+        print("enum2 = %f" % num2)
+        print("enum3 = %f" % num3)
         ind_list.clear()
 
         if(fits1 == 0):
