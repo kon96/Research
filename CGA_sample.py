@@ -464,10 +464,10 @@ def mut(individual):
         count += 1
         r = random.randint(0,1)
         if(r == 0 and f > min_num_f[j] and f <= max_num_f[j] and (d + 1) <= max_num_d[j]):
-            ind[f_list[random.randint(0,len(f_list)-1]].shift[j] = 1
+            ind[f_list[random.randint(0,len(f_list) - 1)]].shift[j] = 1
             break
         elif(r == 1 and d > min_num_d[j] and d <= max_num_d[j] and (f + 1) <= max_num_f[j]):
-            ind[d_list[random.randint(0,len(d_list)-1]].shift[j] = 0
+            ind[d_list[random.randint(0,len(d_list) - 1)]].shift[j] = 0
             break
         elif(count == 10):
             break
