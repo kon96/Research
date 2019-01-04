@@ -15,81 +15,81 @@ from deap import cma
 from itertools import zip_longest
 
 #ALL
-all_employees = [i for i in range(1,26)]
-max_num_d = [11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,18,11,11,11,11,11,11,11]
-min_num_d = [8,8,8,8,7,8,8,8,7,7,7,7,7,8,8,8,8,8,7,8,8,8,13,8,8,7,8,8,8,8]
-max_num_e = [4 for i in range(30)]
-min_num_e = [4 for i in range(30)]
-max_num_n = [3 for i in range(30)]
-min_num_n = [3 for i in range(30)]
-max_num_f = [(25 - (min_num_d[i] + 7)) for i in range(30)]
-min_num_f = [(25 - (max_num_d[i] + 7)) for i in range(30)]
+all_employees = [i for i in range(0,25)]
+max_num_d = np.array([11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,18,11,11,11,11,11,11,11])
+min_num_d = np.array([8,8,8,8,7,8,8,8,7,7,7,7,7,8,8,8,8,8,7,8,8,8,13,8,8,7,8,8,8,8])
+max_num_e = np.array([4 for i in range(30)])
+min_num_e = np.array([4 for i in range(30)])
+max_num_n = np.array([3 for i in range(30)])
+min_num_n = np.array([3 for i in range(30)])
+max_num_f = np.array([(25 - (min_num_d[i] + 7)) for i in range(30)])
+min_num_f = np.array([(25 - (max_num_d[i] + 7)) for i in range(30)])
 
 #1-9 = 1,9
-g_1_9 = [1,9]
-max_num_1_9_d = [2 for i in range(30)]
-min_num_1_9_d = [0 for i in range(30)]
-max_num_1_9_e = [1 for i in range(30)]
-min_num_1_9_e = [0 for i in range(30)]
-max_num_1_9_n = [1 for i in range(30)]
-min_num_1_9_n = [0 for i in range(30)]
+g_1_9 = np.array([0,8])
+max_num_1_9_d = np.array([2 for i in range(30)])
+min_num_1_9_d = np.array([0 for i in range(30)])
+max_num_1_9_e = np.array([1 for i in range(30)])
+min_num_1_9_e = np.array([0 for i in range(30)])
+max_num_1_9_n = np.array([1 for i in range(30)])
+min_num_1_9_n = np.array([0 for i in range(30)])
 
 #A_SS = 1,2,3,4,5,6
-g_A_SS = [1,2,3,4,5,6]
-max_num_A_SS_d = [2,3,3,3,2,3,2,3,2,2,2,2,2,2,3,2,2,3,2,2,3,3,6,2,2,2,3,3,3,2]
-min_num_A_SS_d = [2 for i in range(30)]
-max_num_A_SS_e = [1 for i in range(30)]
-min_num_A_SS_e = [1 for i in range(30)]
-max_num_A_SS_n = [1 for i in range(30)]
-min_num_A_SS_n = [1 for i in range(30)]
+g_A_SS = np.array([0,1,2,3,4,5])
+max_num_A_SS_d = np.array([2,3,3,3,2,3,2,3,2,2,2,2,2,2,3,2,2,3,2,2,3,3,6,2,2,2,3,3,3,2])
+min_num_A_SS_d = np.array([2 for i in range(30)])
+max_num_A_SS_e = np.array([1 for i in range(30)])
+min_num_A_SS_e = np.array([1 for i in range(30)])
+max_num_A_SS_n = np.array([1 for i in range(30)])
+min_num_A_SS_n = np.array([1 for i in range(30)])
 
 #B_rq_s = 19,20,21,22,23,24,25
-g_B_rq_s = [19,20,21,22,23,24,25]
-max_num_B_rq_s_d = [4,6,6,6,4,6,4,6,4,4,4,4,4,4,6,4,4,6,4,4,5,6,6,4,4,4,6,6,6,4]
-min_num_B_rq_s_d = [2 for i in range(30)]
-max_num_B_rq_s_e = [1 for i in range(30)]
-min_num_B_rq_s_e = [1 for i in range(30)]
-max_num_B_rq_s_n = [2 for i in range(30)]
-min_num_B_rq_s_n = [0 for i in range(30)]
+g_B_rq_s = np.array([18,19,20,21,22,23,24])
+max_num_B_rq_s_d = np.array([4,6,6,6,4,6,4,6,4,4,4,4,4,4,6,4,4,6,4,4,5,6,6,4,4,4,6,6,6,4])
+min_num_B_rq_s_d = np.array([2 for i in range(30)])
+max_num_B_rq_s_e = np.array([1 for i in range(30)])
+min_num_B_rq_s_e = np.array([1 for i in range(30)])
+max_num_B_rq_s_n = np.array([2 for i in range(30)])
+min_num_B_rq_s_n = np.array([0 for i in range(30)])
 
 #B_SS = 14,15,16,17,18
-g_B_SS = [14,15,16,17,18]
-max_num_B_SS_d = [2,3,3,3,2,3,2,3,1,1,1,2,1,2,3,2,2,3,2,1,3,3,6,2,2,2,3,3,3,2]
-min_num_B_SS_d = [1,1,1,1,1,1,1,1,0,0,0,1,0,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1]
-max_num_B_SS_e = [1 for i in range(30)]
-min_num_B_SS_e = [1 for i in range(30)]
-max_num_B_SS_n = [1 for i in range(30)]
-min_num_B_SS_n = [0 for i in range(30)]
+g_B_SS = np.array([13,14,15,16,17])
+max_num_B_SS_d = np.array([2,3,3,3,2,3,2,3,1,1,1,2,1,2,3,2,2,3,2,1,3,3,6,2,2,2,3,3,3,2])
+min_num_B_SS_d = np.array([1,1,1,1,1,1,1,1,0,0,0,1,0,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1])
+max_num_B_SS_e = np.array([1 for i in range(30)])
+min_num_B_SS_e = np.array([1 for i in range(30)])
+max_num_B_SS_n = np.array([1 for i in range(30)])
+min_num_B_SS_n = np.array([0 for i in range(30)])
 
 #B_SS_s = 14,15,16,17,18,25
-g_B_SS_s = [14,15,16,17,18,25]
-max_num_B_SS_s_d = [3,3,3,3,2,3,3,3,2,2,2,2,2,3,3,3,3,3,2,2,3,3,6,3,3,2,3,3,3,3]
-min_num_B_SS_s_d = [2,2,2,2,2,2,2,2,1,1,1,2,1,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,2,2]
-max_num_B_SS_s_e = [2 for i in range(30)]
-min_num_B_SS_s_e = [1 for i in range(30)]
-max_num_B_SS_s_n = [1 for i in range(30)]
-min_num_B_SS_s_n = [1 for i in range(30)]
+g_B_SS_s = np.array([13,14,15,16,17,24])
+max_num_B_SS_s_d = np.array([3,3,3,3,2,3,3,3,2,2,2,2,2,3,3,3,3,3,2,2,3,3,6,3,3,2,3,3,3,3])
+min_num_B_SS_s_d = np.array([2,2,2,2,2,2,2,2,1,1,1,2,1,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,2,2])
+max_num_B_SS_s_e = np.array([2 for i in range(30)])
+min_num_B_SS_s_e = np.array([1 for i in range(30)])
+max_num_B_SS_s_n = np.array([1 for i in range(30)])
+min_num_B_SS_s_n = np.array([1 for i in range(30)])
 
 #GroupA = 1,2,3,4,5,6,7,8,9,10,11,12,13
-g_A = [1,2,3,4,5,6,7,8,9,10,11,12,13]
-max_num_A_d = [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,9,6,6,6,6,6,6,6]
-min_num_A_d = [4,4,4,4,3,4,4,4,4,4,4,3,4,4,4,4,4,4,3,4,4,4,6,4,4,3,4,4,4,4]
-max_num_A_e = [2 for i in range(30)]
-min_num_A_e = [2 for i in range(30)]
-max_num_A_n = [2 for i in range(30)]
-min_num_A_n = [1 for i in range(30)]
+g_A = np.array([0,1,2,3,4,5,6,7,8,9,10,11,12])
+max_num_A_d = np.array([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,9,6,6,6,6,6,6,6])
+min_num_A_d = np.array([4,4,4,4,3,4,4,4,4,4,4,3,4,4,4,4,4,4,3,4,4,4,6,4,4,3,4,4,4,4])
+max_num_A_e = np.array([2 for i in range(30)])
+min_num_A_e = np.array([2 for i in range(30)])
+max_num_A_n = np.array([2 for i in range(30)])
+min_num_A_n = np.array([1 for i in range(30)])
 
 #GroupB = 14,15,16,17,18,19,20,21,22,23,24,25
-g_B = [14,15,16,17,18,19,20,21,22,23,24,25]
-max_num_B_d = [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,9,6,6,6,6,6,6,6]
-min_num_B_d = [4,4,4,4,3,4,4,4,4,4,4,3,4,4,4,4,4,4,3,4,4,4,6,4,4,3,4,4,4,4]
-max_num_B_e = [2 for i in range(30)]
-min_num_B_e = [2 for i in range(30)]
-max_num_B_n = [2 for i in range(30)]
-min_num_B_n = [1 for i in range(30)]
+g_B = np.array([13,14,15,16,17,18,19,20,21,22,23,24])
+max_num_B_d = np.array([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,9,6,6,6,6,6,6,6])
+min_num_B_d = np.array([4,4,4,4,3,4,4,4,4,4,4,3,4,4,4,4,4,4,3,4,4,4,6,4,4,3,4,4,4,4])
+max_num_B_e = np.array([2 for i in range(30)])
+min_num_B_e = np.array([2 for i in range(30)])
+max_num_B_n = np.array([2 for i in range(30)])
+min_num_B_n = np.array([1 for i in range(30)])
 
 #勤務希望
-request = [ 
+request = np.array([ 
     [],
     [1,8,17],
     [1],
@@ -115,12 +115,12 @@ request = [
     [8,9],
     [1,2,24,25],
     []
-]
+])
 
 #その他の勤務
-other = [
+other = np.array([
     [],[12],[],[19],[],[],[],[9],[],[0,15],[15],[15],[6],[9],[],[12,20],[12],[19],[6,15],[29],[29],[0,29],[29],[],[]
-]
+])
 
 #禁止勤務パターン
 b_shift = ['[0|5][1-4][0|5]','[1-4]{7}','[0|5]{6}','[1]{8}',
@@ -193,45 +193,38 @@ class Shift_G(object):
         self.n = 0
         self.f = 0
         self.group = group
-        self.shift = []
+        self.shift = np.empty((len(group),30),int)
     
     def check(self,pop):
-        for j in range(30):
-            for i in self.group:
-                self.shift.append(pop[i-1].shift[j])
-            self.d = self.shift.count(1)
-            self.e = self.shift.count(2)
-            self.n = self.shift.count(3)
+        for i,g in enumerate(self.group):
+            self.shift[i][:] = pop[g][:]
+            
+        self.d = np.sum(self.shift == 1, axis = 0)
+        self.e = np.sum(self.shift == 2, axis = 0)
+        self.n = np.sum(self.shift == 3, axis = 0)
 
-            if(self.d_max[j] < self.d or self.d_min[j] > self.d):
-                Shift_G.penalty2 += 1
-            if(self.e_max[j] < self.e or self.e_min[j] > self.e):
-                Shift_G.penalty2 += 1
-            if(self.n_max[j] < self.n or self.n_min[j] > self.n):
-                Shift_G.penalty2 += 1
+        p1 = np.sum((self.d_max < self.d) | (self.d_min > self.d))
+        p2 = np.sum((self.e_max < self.e) | (self.e_min > self.e))
+        p3 = np.sum((self.n_max < self.n) | (self.n_min > self.n))
 
-            self.shift.clear()
+        Shift_G.penalty2 = Shift_G.penalty2 + p1 + p2 + p3 
 
     def error(self,pop):
         enum = 0
         p2 = []
-        for j in range(30):
-            for i in self.group:
-                self.shift.append(pop[i-1].shift[j])
-            self.d = self.shift.count(1)
-            self.e = self.shift.count(2)
-            self.n = self.shift.count(3)
 
-            if(self.d_max[j] < self.d or self.d_min[j] > self.d):
-                enum += 1
-            if(self.e_max[j] < self.e or self.e_min[j] > self.e):
-                enum += 1
-            if(self.n_max[j] < self.n or self.n_min[j] > self.n):
-                enum += 1
-            p2.append(enum)
-            self.shift.clear()
-            enum = 0
-        return p2
+        for i,g in enumerate(self.group):
+            self.shift[i][:] = pop[g][:]
+            
+        self.d = np.sum(self.shift == 1, axis = 0)
+        self.e = np.sum(self.shift == 2, axis = 0)
+        self.n = np.sum(self.shift == 3, axis = 0)
+
+        enum += np.sum((self.d_max < self.d) | (self.d_min > self.d))
+        enum += np.sum((self.e_max < self.e) | (self.e_min > self.e))
+        enum += np.sum((self.n_max < self.n) | (self.n_min > self.n))
+
+        return enum
 
 class LocalSearch(Annealer):
 
@@ -264,106 +257,113 @@ creator.create("FitnessShift", base.Fitness, weights=(-1.0,))
 creator.create("Individual", list, fitness = creator.FitnessShift)
 
 def Shift_init(pop):
+    global max_num_f
+    global min_num_f
     day = []
-    for ind in pop:
-        ind.req_init()
+    for n,r in enumerate(request):
+        if(len(r) != 0):
+            for i in r:
+                pop[n][i] = 5
+    for n,o in enumerate(other):
+        if(len(other) != 0):
+            for j in o:
+                pop[n][j] = 4
+    d = np.sum(pop == 1, axis = 0)
+    e = np.sum(pop == 2, axis = 0)
+    n = np.sum(pop == 3, axis = 0)
+    f = np.sum(pop == 0, axis = 0)
+    f += np.sum(pop == 5, axis = 0)
+    o = np.sum(pop == 4, axis = 0)
+    max_num_f -= o
+    min_num_f -= o 
     for i in range(30):
-        for j in range(25):
-            day.append(pop[j].shift[i])
-        d = day.count(1)
-        e = day.count(2)
-        n = day.count(3)
-        f = day.count(0) + day.count(5)
-        o = day.count(4)
-        max_num_f[i] -= o
-        min_num_f[i] -= o 
+        day = pop[:,i]
         while(1):
             miss = 0
-            if(d > max_num_d[i]):
+            if(d[i] > max_num_d[i]):
                 miss += 1
-                if(e < min_num_e[i]):
-                    day[day.index(1)] = 2
-                    d -= 1
-                    e += 1
-                elif(n < min_num_n[i]):
-                    day[day.index(1)] = 3
-                    d -= 1
-                    n += 1
-                elif(f < min_num_f[i]):
-                    day[day.index(1)] = 0
-                    d -= 1
-                    f += 1
-            elif (d < min_num_d[i]):
+                if(e[i] < min_num_e[i]):
+                    day[np.where(day == 1)[0][np.random.randint(0,len(np.where(day == 1)[0]))]] = 2
+                    d[i] -= 1
+                    e[i] += 1
+                elif(n[i] < min_num_n[i]):
+                    day[np.where(day == 1)[0][np.random.randint(0,len(np.where(day == 1)[0]))]] = 3
+                    d[i] -= 1
+                    n[i] += 1
+                elif(f[i] < min_num_f[i]):
+                    day[np.where(day == 1)[0][np.random.randint(0,len(np.where(day == 1)[0]))]] = 0
+                    d[i] -= 1
+                    f[i] += 1
+            elif (d[i] < min_num_d[i]):
                 miss += 1
-                if(e > max_num_e[i]):
-                    day[day.index(2)] = 1
-                    d += 1
-                    e -= 1
-                elif(n > max_num_n[i]):
-                    day[day.index(3)] = 1
-                    d += 1
-                    n -= 1
-                elif(f > min_num_f[i]):
-                    day[day.index(0)] = 1
-                    d += 1
-                    f -= 1
+                if(e[i] > max_num_e[i]):
+                    day[np.where(day == 2)[0][np.random.randint(0,len(np.where(day == 2)[0]))]] = 1
+                    d[i] += 1
+                    e[i] -= 1
+                elif(n[i] > max_num_n[i]):
+                    day[np.where(day == 3)[0][np.random.randint(0,len(np.where(day == 3)[0]))]] = 1
+                    d[i] += 1
+                    n[i] -= 1
+                elif(f[i] > min_num_f[i]):
+                    day[np.where(day == 0)[0][np.random.randint(0,len(np.where(day == 0)[0]))]] = 1
+                    d[i] += 1
+                    f[i] -= 1
             
-            if(f > max_num_f[i]):
+            if(f[i] > max_num_f[i]):
                 miss += 1
-                if(e < min_num_e[i]):
-                    day[day.index(0)] = 2
-                    f -= 1
-                    e += 1
-                elif(n < min_num_n[i]):
-                    day[day.index(0)] = 3
-                    f -= 1
-                    n += 1
-                elif(d < min_num_d[i]):
-                    day[day.index(0)] = 1
-                    f -= 1
-                    d += 1
-            elif(f < min_num_f[i]):
+                if(e[i] < min_num_e[i]):
+                    day[np.where(day == 0)[0][np.random.randint(0,len(np.where(day == 0)[0]))]] = 2
+                    f[i] -= 1
+                    e[i] += 1
+                elif(n[i] < min_num_n[i]):
+                    day[np.where(day == 0)[0][np.random.randint(0,len(np.where(day == 0)[0]))]] = 3
+                    f[i] -= 1
+                    n[i] += 1
+                elif(d[i] < min_num_d[i]):
+                    day[np.where(day == 0)[0][np.random.randint(0,len(np.where(day == 0)[0]))]] = 1
+                    f[i] -= 1
+                    d[i] += 1
+            elif(f[i] < min_num_f[i]):
                 miss += 1
-                if(e > max_num_e[i]):
-                    day[day.index(2)] = 0
-                    f += 1
-                    e -= 1
-                elif(n > max_num_n[i]):
-                    day[day.index(3)] = 0
-                    f += 1
-                    n -= 1
+                if(e[i] > max_num_e[i]):
+                    day[np.where(day == 2)[0][np.random.randint(0,len(np.where(day == 2)[0]))]] = 0
+                    f[i] += 1
+                    e[i] -= 1
+                elif(n[i] > max_num_n[i]):
+                    day[np.where(day == 3)[0][np.random.randint(0,len(np.where(day == 3)[0]))]] = 0
+                    f[i] += 1
+                    n[i] -= 1
                 elif(d > min_num_d[i]):
-                    day[day.index(1)] = 0
-                    f += 1
-                    d -= 1
+                    day[np.where(day == 1)[0][np.random.randint(0,len(np.where(day == 1)[0]))]] = 0
+                    f[i] += 1
+                    d[i] -= 1
             
-            if(e > max_num_e[i]):
+            if(e[i] > max_num_e[i]):
                 miss += 1
-                day[day.index(2)] = 3
-                e -= 1
-                n += 1
-            elif(e < min_num_e[i]):
+                day[np.where(day == 2)[0][np.random.randint(0,len(np.where(day == 2)[0]))]] = 3
+                e[i] -= 1
+                n[i] += 1
+            elif(e[i] < min_num_e[i]):
                 miss += 1
-                day[day.index(3)] = 2
-                e += 1
-                n -= 1
+                day[np.where(day == 3)[0][np.random.randint(0,len(np.where(day == 3)[0]))]] = 2
+                e[i] += 1
+                n[i] -= 1
             
-            if(n > max_num_n[i]):
+            if(n[i] > max_num_n[i]):
                 miss += 1
-                day[day.index(3)] = 0
-                n -= 1
-                f += 1
-            elif(n < min_num_n[i]):
+                day[np.where(day == 3)[0][np.random.randint(0,len(np.where(day == 3)[0]))]] = 0
+                n[i] -= 1
+                f[i] += 1
+            elif(n[i] < min_num_n[i]):
                 miss += 1
-                day[day.index(0)] = 3
-                n += 1
-                f -= 1
+                day[np.where(day == 0)[0][np.random.randint(0,len(np.where(day == 0)[0]))]] = 3
+                n[i] += 1
+                f[i] -= 1
         
             if(miss == 0):
                 break
-        for s in range(25):
-            pop[s].shift[i] = day[s]
-        day.clear()
+        
+        pop[:,i] = day[:]
 
     return pop
 
@@ -383,17 +383,35 @@ def employee_num(pop):
     return p2
 
 def ShiftPattern(pop):
-    penalty3 = 0
+    penalty = 0
     for ind in pop:
-        penalty3 += ind.check()
+        
+        d = np.sum(ind == 1)
+        e = np.sum(ind == 2)
+        n = np.sum(ind == 3)
+        f = np.sum(ind == 0)
+        f += np.sum(ind == 5)
+
+        if(d > 15):
+            penalty += 1
+        if(e > 6 or e < 4):
+            penalty += 1
+        if(n > 4 or n < 2):
+            penalty += 1
+        if(f < 9):
+            penalty += 1
+
+        map_l = map(str,ind)
+        pattern = ''.join(map_l)
+        for x in b_shift:
+            y = re.findall(x,pattern)
+            penalty += len(y)
     
-    return penalty3
+    return penalty
 
 def cxTwoPoint(pop):
     size = 29
     excluded = []
-    copy1 = creator.Individual()
-    copy2 = creator.Individual()
     t_list = []
     point_set = []
     ind_list = []
@@ -429,38 +447,38 @@ def cxTwoPoint(pop):
                 point_set.clear()
                 break
        
-        excluded.extend(pop[ind1].request)
-        excluded.extend(pop[ind2].request)
-        excluded.extend(pop[ind1].other)
-        excluded.extend(pop[ind2].other)
+        excluded.extend(request[ind1])
+        excluded.extend(request[ind2])
+        excluded.extend(other[ind1])
+        excluded.extend(other[ind2])
 
         for s in range(30):
             if(s  not in excluded):
                 if(s < cxpoint1):
-                    copy2[ind1].shift[s],copy2[ind2].shift[s] = copy2[ind2].shift[s],copy2[ind1].shift[s]
+                    copy2[ind1][s],copy2[ind2][s] = copy2[ind2][s],copy2[ind1][s]
                 elif(s == cxpoint1):
-                    copy2[ind1].shift[s],copy2[ind2].shift[s] = copy2[ind2].shift[s],copy2[ind1].shift[s]
-                    copy1[ind1].shift[s],copy1[ind2].shift[s] = copy1[ind2].shift[s],copy1[ind1].shift[s]
+                    copy2[ind1][s],copy2[ind2][s] = copy2[ind2][s],copy2[ind1][s]
+                    copy1[ind1][s],copy1[ind2][s] = copy1[ind2][s],copy1[ind1][s]
                 elif(s > cxpoint1 and s < cxpoint2):
-                    copy1[ind1].shift[s],copy1[ind2].shift[s] = copy1[ind2].shift[s],copy1[ind1].shift[s]
+                    copy1[ind1][s],copy1[ind2][s] = copy1[ind2][s],copy1[ind1][s]
                 elif(s == cxpoint2):
-                    copy2[ind1].shift[s],copy2[ind2].shift[s] = copy2[ind2].shift[s],copy2[ind1].shift[s]
-                    copy1[ind1].shift[s],copy1[ind2].shift[s] = copy1[ind2].shift[s],copy1[ind1].shift[s]
+                    copy2[ind1][s],copy2[ind2][s] = copy2[ind2][s],copy2[ind1][s]
+                    copy1[ind1][s],copy1[ind2][s] = copy1[ind2][s],copy1[ind1][s]
                 elif(s > cxpoint2):
-                    copy2[ind1].shift[s],copy2[ind2].shift[s] = copy2[ind2].shift[s],copy2[ind1].shift[s]
+                    copy2[ind1][s],copy2[ind2][s] = copy2[ind2][s],copy2[ind1][s]
         
         excluded.clear()
 
-        #copy1[ind1].shift[cxpoint1:cxpoint2], copy1[ind2].shift[cxpoint1:cxpoint2] = copy1[ind2].shift[cxpoint1:cxpoint2], copy1[ind1].shift[cxpoint1:cxpoint2]
+        #copy1[ind1][cxpoint1:cxpoint2], copy1[ind2][cxpoint1:cxpoint2] = copy1[ind2][cxpoint1:cxpoint2], copy1[ind1][cxpoint1:cxpoint2]
         ind_list.append(copy1)
-        #copy2[ind1].shift[0:cxpoint1+1], copy2[ind2].shift[0:cxpoint1] = copy2[ind2].shift[0:cxpoint1], copy2[ind1].shift[0:cxpoint1]
-        #copy2[ind1].shift[cxpoint2:size], copy2[ind2].shift[cxpoint2:size] = copy2[ind2].shift[cxpoint2:size], copy2[ind1].shift[cxpoint2:size]
+        #copy2[ind1][0:cxpoint1+1], copy2[ind2][0:cxpoint1] = copy2[ind2][0:cxpoint1], copy2[ind1][0:cxpoint1]
+        #copy2[ind1][cxpoint2:size], copy2[ind2][cxpoint2:size] = copy2[ind2][cxpoint2:size], copy2[ind1][cxpoint2:size]
         ind_list.append(copy2)
     
     t_list.clear()
     return ind_list
 
-origine = creator.Individual()
+origine = []
 
 def my_index_multi(l, x):
     return [i for i, _x in enumerate(l) if _x == x]
@@ -468,13 +486,12 @@ def my_index_multi(l, x):
 def mut(individual):
     global origine
 
-    x = evalshift(individual)
-    y = evalshift(origine)
-    day = []
+    x = cal_p(individual)
+    y = cal_p(origine)
 
-    if(x[0] < y[0]):
+    if(x < y):
         ind = copy.deepcopy(individual)
-    elif(x[0] > y[0]):
+    elif(x > y):
         ind = copy.deepcopy(origine)
     else:
         ind = copy.deepcopy(individual)
@@ -486,28 +503,27 @@ def mut(individual):
     while(1):
         i = random.randint(0,24)
         k = random.randint(0,24)
-        if(i != k and ind[i].shift[j] != 4 and ind[i].shift[j] != 5 and ind[k].shift[j] != 4 and ind[k].shift[j] != 5):
+        if(i != k and ind[i][j] != 4 and ind[i][j] != 5 and ind[k][j] != 4 and ind[k][j] != 5):
             break
-    ind[i].shift[j],ind[k].shift[j] = ind[k].shift[j],ind[i].shift[j] 
+    ind[i][j],ind[k][j] = ind[k][j],ind[i][j]
+    
+    day = ind[:,j]
 
-    for s in ind:
-        day.append(s.shift[j])
-
-    d = day.count(1)
-    f = day.count(0) + day.count(5)
+    d = np.sum(ind[:,j] == 1)
+    f = np.sum(ind[:,j] == 0)
     count = 0
 
-    f_list = my_index_multi(day,0)
-    d_list = my_index_multi(day,1)
-    if((len(f_list) - 1) >= 1 and (len(d_list) - 1) >= 1):
+    f_list = np.where(day == 0)
+    d_list = np.where(day == 1)
+    if((len(f_list[0]) - 1) >= 1 and (len(d_list[0]) - 1) >= 1):
         while(1):
             count += 1
             r = random.randint(0,1)
             if(r == 0 and f > min_num_f[j] and f <= max_num_f[j] and (d + 1) <= max_num_d[j]):
-                ind[f_list[random.randint(0,len(f_list) - 1)]].shift[j] = 1
+                ind[f_list[0][np.random.randint(0,len(f_list[0]))]][j] = 1
                 break
             elif(r == 1 and d > min_num_d[j] and d <= max_num_d[j] and (f + 1) <= max_num_f[j]):
-                ind[d_list[random.randint(0,len(d_list) - 1)]].shift[j] = 0
+                ind[d_list[0][np.random.randint(0,len(d_list[0]))]][j] = 0
                 break
             elif(count == 10):
                 break
@@ -540,11 +556,11 @@ def result(pop):
     n = [0 for i in range(30)]
     f = [0 for i in range(30)]
     for ind in pop:
-        print(ind.shift)
-    print(pop.fitness.values[0])
+        print(ind)
+    print(cal_p(pop))
     print()
 
-    for j in range(30):
+    """for j in range(30):
         for s in pop:
             day.append(s.shift[j])
         d[j] = day.count(1)
@@ -556,7 +572,7 @@ def result(pop):
     print(d)
     print(e)
     print(n)
-    print(f)
+    print(f)"""
 
     g1 = A.error(pop)
     g2 = A_SS.error(pop)
@@ -569,7 +585,7 @@ def result(pop):
 
     p3 = []
 
-    for i,ind in enumerate(pop):
+    """for i,ind in enumerate(pop):
         d = ind.shift.count(1)
         e = ind.shift.count(2)
         n = ind.shift.count(3)
@@ -587,7 +603,7 @@ def result(pop):
             p3.append(y)
             p3.append(str(len(y)))
         print(p3)
-        p3.clear()
+        p3.clear()"""
     
     print("g1:",end = "")
     print(g1)
@@ -606,10 +622,13 @@ def result(pop):
     print("g8:",end = "")
     print(g8)
 
-def create_pop(pop):
+def create_pop():
+    ind = np.empty((25,30), int)
     for i in range(25):
-        pop.append(Nurse(i,request[i],other[i]))
-    return pop
+        for j in range(30):
+            r = np.random.randint(0,4)
+            ind[i][j] = r
+    return ind
 
 def simulated_annealing(pop):
     population = copy.deepcopy(pop)
@@ -640,8 +659,7 @@ toolbox.register("mutate", mut)
 def main():
     global origine
     start = time.time()
-    pop = creator.Individual()
-    pop = create_pop(pop)
+    pop = create_pop()
     NGEN = 50000
     m = 10
     c = 0
@@ -650,18 +668,15 @@ def main():
         
     pop = Shift_init(pop)
 
-    pop.fitness.values = toolbox.evaluate(pop)
+    fits1 = cal_p(pop)
     origine = pop
-    fits2 = pop.fitness.values[0]
+    fits2 = fits1
     result(pop)
-
-    print(" Evaluating %i individuals" % len(pop))
 
     for g in range(NGEN):
        
         print("-- Generation %i --" % g)
         offspring = pop
-        offspring = list(map(toolbox.clone, offspring))
 
         ind_list = toolbox.mate(offspring)
         fitnesses = list(map(cal_p,ind_list))
@@ -678,9 +693,8 @@ def main():
                 c = 0
 
         pop[:] = best_ind
-        pop.fitness.values = toolbox.evaluate(pop)
 
-        fits1 = pop.fitness.values[0]
+        fits1 = cal_p(pop)
 
         if(fits1 == fits2):
             count += 1
