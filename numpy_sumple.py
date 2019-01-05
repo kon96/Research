@@ -211,7 +211,6 @@ class Shift_G(object):
 
     def error(self,pop):
         enum = 0
-        p2 = []
 
         for i,g in enumerate(self.group):
             self.shift[i][:] = pop[g][:]
@@ -232,13 +231,22 @@ class LocalSearch(Annealer):
         super(LocalSearch,self).__init__(init_state)
 
     def move(self):
-        n = random.choice(list(range(len(self.state))))
+        n1 = random.choice(list(range(len(self.state))))
+        count = 0
         while(1):
-            s = random.choice(list(range(len(self.state[n].shift) - 1 )))
+            s = random.choice(list(range(len(self.state[n1]) - 1 )))
             c = s + 1
-            if(self.state[n].shift[c] <= 3):
+            if(self.state[n1][c] <= 3 and self.state[n1][s] <= 3):
+                if(self.state[n][c] > 1 or self.state[n][s] > 1):
+                    while(1):
+                        n2 = random.choice(list(range(len(self.state))))
+                        if((self.state[n2][s] == self.state[n1][c]) and (self.state[n2][c] == self.state[n1][s]) and (n1 != n2)):
+                            break
+                        count += 1
+                        if(count == 20):
+                            break
                 break
-        self.state[n].shift[s],self.state[n].shift[c] = self.state[n].shift[c],self.state[n].shift[s]
+        self.state[n1][s],self.state[n1][c] = self.state[n1][c],self.state[n1][s]
 
     def energy(self):
        e = cal_p(self.state)
@@ -415,7 +423,7 @@ def cxTwoPoint(pop):
     t_list = []
     point_set = []
     ind_list = []
-    for i in range(250):
+    for i in range(150):
         copy1 = copy.deepcopy(pop)
         copy2 = copy.deepcopy(pop)
         while(1):
@@ -550,11 +558,11 @@ def evalshift(pop):
     return penalty,
 
 def result(pop):
-    day = []
-    d = [0 for i in range(30)]
-    e = [0 for i in range(30)]
-    n = [0 for i in range(30)]
-    f = [0 for i in range(30)]
+    d = np.sum(pop == 1, axis = 0)
+    e = np.sum(pop == 2, axis = 0)
+    n = np.sum(pop == 3, axis = 0)
+    f = np.sum(pop == 0, axis = 0)
+    f += np.sum(pop == 5, axis = 0)
     for ind in pop:
         print(ind)
     print(cal_p(pop))
@@ -567,12 +575,12 @@ def result(pop):
         e[j] = day.count(2)
         n[j] = day.count(3)
         f[j] = day.count(0) + day.count(5)
-        day.clear()
+        day.clear()"""
 
     print(d)
     print(e)
     print(n)
-    print(f)"""
+    print(f)
 
     g1 = A.error(pop)
     g2 = A_SS.error(pop)
@@ -671,6 +679,7 @@ def main():
     fits1 = cal_p(pop)
     origine = pop
     fits2 = fits1
+    best_fits = fits1
     result(pop)
 
     for g in range(NGEN):
@@ -688,7 +697,7 @@ def main():
         if(g % m == 0):
             best_ind = toolbox.mutate(best_ind)
             c += 1
-            if(c == 100):
+            if(c == 75):
                 m += 20
                 c = 0
 
@@ -705,8 +714,7 @@ def main():
 
         if(count == 50):
             pop = simulated_annealing(pop)
-            pop.fitness.values = toolbox.evaluate(pop)
-            fits1 = pop.fitness.values[0]
+            fits1 = cal_p(pop)
             count = 0
 
         num2,num3 = cal_enum(pop)
@@ -718,9 +726,13 @@ def main():
         if(fits1 == 0):
             break
 
+        if(best_fits > fits1):
+            best_fits = fits1
+            best_pop = pop
+
     print("-- End of (successful) evolution --")
     print("Best individual is ")
-    result(pop)
+    result(best_pop)
     elapsed_time = (time.time() - start) / 3600 
     print("elapsed_time:{0}".format(elapsed_time) + "[h]")
 
