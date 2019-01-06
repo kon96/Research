@@ -6,6 +6,7 @@ import copy
 import numpy as np
 sys.path.append('/usr/local/lib/python3.6/dist-packages')
 
+from joblib import Parallel,delayed
 from simanneal import Annealer
 from scoop import futures
 from deap import base
@@ -232,20 +233,24 @@ class LocalSearch(Annealer):
 
     def move(self):
         n1 = random.choice(list(range(len(self.state))))
-        count = 0
         while(1):
             s = random.choice(list(range(len(self.state[n1]) - 1 )))
             c = s + 1
-            if(self.state[n1][c] <= 3 and self.state[n1][s] <= 3):
-                if(self.state[n][c] > 1 or self.state[n][s] > 1):
-                    while(1):
-                        n2 = random.choice(list(range(len(self.state))))
-                        if((self.state[n2][s] == self.state[n1][c]) and (self.state[n2][c] == self.state[n1][s]) and (n1 != n2)):
+            if(self.state[n1][c] <= 3 and self.state[n1][s] <= 3 and self.state[n1][s] != self.state[n1][c]):
+                if(self.state[n1][c] > 1 or self.state[n1][s] > 1):
+                    ind2 = self.state[:,s]
+                    x = np.where(ind2 == self.state[n1][c])
+                    n2 = None
+
+                    for i in range(len(x[0])):
+                        if(self.state[x[0][i]][c] == self.state[n1][s]):
+                            n2 = x[0][i]
                             break
-                        count += 1
-                        if(count == 20):
-                            break
-                break
+
+                    if(n2 != None):
+                        self.state[n2][s],self.state[n2][c] = self.state[n2][c],self.state[n2][s]
+            break
+    
         self.state[n1][s],self.state[n1][c] = self.state[n1][c],self.state[n1][s]
 
     def energy(self):
@@ -341,7 +346,7 @@ def Shift_init(pop):
                     day[np.where(day == 3)[0][np.random.randint(0,len(np.where(day == 3)[0]))]] = 0
                     f[i] += 1
                     n[i] -= 1
-                elif(d > min_num_d[i]):
+                elif(d[i] > min_num_d[i]):
                     day[np.where(day == 1)[0][np.random.randint(0,len(np.where(day == 1)[0]))]] = 0
                     f[i] += 1
                     d[i] -= 1
@@ -542,7 +547,7 @@ def cal_p(pop):
     num2 = employee_num(pop) 
     num3 = ShiftPattern(pop)
     
-    penalty = num2 + (num3 * 3)
+    penalty = num2 + (num3 * 10)
 
     return penalty
 
@@ -646,9 +651,10 @@ def simulated_annealing(pop):
     prob.anneal()
 
     print("\n--------Simulated Annealing----------")
-    print("best_state: %f \n" % prob.energy())
+    print("best_energy:",end = "")
+    print(prob.best_energy)
 
-    return population
+    return prob.best_state
 
 
 toolbox = base.Toolbox()
@@ -680,6 +686,7 @@ def main():
     origine = pop
     fits2 = fits1
     best_fits = fits1
+    best_pop = copy.deepcopy(pop)
     result(pop)
 
     for g in range(NGEN):
@@ -688,8 +695,8 @@ def main():
         offspring = pop
 
         ind_list = toolbox.mate(offspring)
-        fitnesses = list(map(cal_p,ind_list))
-
+        #ind_list = Parallel(n_jobs=-1)([delayed(toolbox.mate)(offspring) for i in range(1150)])
+        fitnesses = Parallel(n_jobs=-1)( [delayed(cal_p)(ind) for ind in ind_list])
         i = fitnesses.index(min(fitnesses))
 
         best_ind = ind_list[i]
@@ -728,7 +735,8 @@ def main():
 
         if(best_fits > fits1):
             best_fits = fits1
-            best_pop = pop
+            best_pop = copy.deepcopy(pop)
+            origine = copy.deepcopy(best_pop)
 
     print("-- End of (successful) evolution --")
     print("Best individual is ")
