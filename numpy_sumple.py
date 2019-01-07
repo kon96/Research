@@ -180,8 +180,7 @@ class Nurse(object):
         return penalty
 
 class Shift_G(object):
-    penalty2 = 0
-
+    
     def __init__(self,d_max,d_min,e_max,e_min,n_max,n_min,group):
         self.d_max = d_max
         self.d_min = d_min
@@ -197,6 +196,7 @@ class Shift_G(object):
         self.shift = np.empty((len(group),30),int)
     
     def check(self,pop):
+        penalty = 0
         for i,g in enumerate(self.group):
             self.shift[i][:] = pop[g][:]
             
@@ -208,7 +208,8 @@ class Shift_G(object):
         p2 = np.sum((self.e_max < self.e) | (self.e_min > self.e))
         p3 = np.sum((self.n_max < self.n) | (self.n_min > self.n))
 
-        Shift_G.penalty2 = Shift_G.penalty2 + p1 + p2 + p3 
+        penalty =  p1 + p2 + p3
+        return penalty 
 
     def error(self,pop):
         enum = 0
@@ -381,17 +382,15 @@ def Shift_init(pop):
     return pop
 
 def employee_num(pop):
-    all_shift.check(pop)
-    A.check(pop)
-    A_SS.check(pop)
-    B.check(pop)
-    B_SS.check(pop)
-    B_SS_s.check(pop)
-    B_rq_s.check(pop)
-    o_n.check(pop)
-
-    p2 = Shift_G.penalty2
-    Shift_G.penalty2 = 0
+    p2 = 0
+    p2 += all_shift.check(pop) * 3
+    p2 += A.check(pop) * 3
+    p2 += A_SS.check(pop) * 3
+    p2 += B.check(pop) * 3
+    p2 += B_SS.check(pop)
+    p2 += B_SS_s.check(pop) * 3
+    p2 += B_rq_s.check(pop)
+    p2 += o_n.check(pop)
 
     return p2
 
@@ -404,6 +403,7 @@ def ShiftPattern(pop):
         n = np.sum(ind == 3)
         f = np.sum(ind == 0)
         f += np.sum(ind == 5)
+        n_list = np.where(ind == 3)
 
         if(d > 15):
             penalty += 1
@@ -413,6 +413,16 @@ def ShiftPattern(pop):
             penalty += 1
         if(f < 9):
             penalty += 1
+        """for x in n_list[0]:
+            if( x == 0):
+                if(x + 1 != 3):
+                    penalty += 1
+            elif( x == len(ind) - 1):
+                if(x - 1 != 3):
+                    penalty += 1
+            else:
+                if(x + 1 != 3 and x - 1 != 3):
+                    penalty += 1"""
 
         map_l = map(str,ind)
         pattern = ''.join(map_l)
@@ -511,14 +521,16 @@ def mut(individual):
 
     origine = ind
 
+    r = None
     j = random.randint(0,29)
+    i = np.where(ind[:,j] == 3)
+    r = np.random.randint(0,len(i[0]))
 
     while(1):
-        i = random.randint(0,24)
         k = random.randint(0,24)
-        if(i != k and ind[i][j] != 4 and ind[i][j] != 5 and ind[k][j] != 4 and ind[k][j] != 5):
+        if(i[0][r] != k and ind[k][j] < 3):
             break
-    ind[i][j],ind[k][j] = ind[k][j],ind[i][j]
+    ind[i[0][r]][j],ind[k][j] = ind[k][j],ind[i[0][r]][j]
     
     day = ind[:,j]
 
@@ -533,10 +545,12 @@ def mut(individual):
             count += 1
             r = random.randint(0,1)
             if(r == 0 and f > min_num_f[j] and f <= max_num_f[j] and (d + 1) <= max_num_d[j]):
-                ind[f_list[0][np.random.randint(0,len(f_list[0]))]][j] = 1
+                z = f_list[0][np.random.randint(0,len(f_list[0]))]
+                ind[z][j] = 1
                 break
             elif(r == 1 and d > min_num_d[j] and d <= max_num_d[j] and (f + 1) <= max_num_f[j]):
-                ind[d_list[0][np.random.randint(0,len(d_list[0]))]][j] = 0
+                z = d_list[0][np.random.randint(0,len(d_list[0]))]
+                ind[z][j] = 0
                 break
             elif(count == 10):
                 break
@@ -568,7 +582,8 @@ def result(pop):
     n = np.sum(pop == 3, axis = 0)
     f = np.sum(pop == 0, axis = 0)
     f += np.sum(pop == 5, axis = 0)
-    for ind in pop:
+    for num,ind in enumerate(pop):
+        print("%2d:" % num ,end = "")
         print(ind)
     print(cal_p(pop))
     print()
@@ -596,7 +611,7 @@ def result(pop):
     g7 = o_n.error(pop)
     g8 = all_shift.error(pop)
 
-    p3 = []
+    p3 = ShiftPattern(pop)
 
     """for i,ind in enumerate(pop):
         d = ind.shift.count(1)
@@ -635,6 +650,9 @@ def result(pop):
     print("g8:",end = "")
     print(g8)
 
+    print("p3:",end = "")
+    print(p3)
+
 def create_pop():
     ind = np.empty((25,30), int)
     for i in range(25):
@@ -656,7 +674,6 @@ def simulated_annealing(pop):
 
     return prob.best_state
 
-
 toolbox = base.Toolbox()
 toolbox.register("map", futures.map)
 #0:休暇 1:日勤 2:準夜勤 3:夜勤 4:その他
@@ -674,7 +691,7 @@ def main():
     global origine
     start = time.time()
     pop = create_pop()
-    NGEN = 50000
+    NGEN = 100000
     m = 10
     c = 0
 
@@ -695,7 +712,6 @@ def main():
         offspring = pop
 
         ind_list = toolbox.mate(offspring)
-        #ind_list = Parallel(n_jobs=-1)([delayed(toolbox.mate)(offspring) for i in range(1150)])
         fitnesses = Parallel(n_jobs=-1)( [delayed(cal_p)(ind) for ind in ind_list])
         i = fitnesses.index(min(fitnesses))
 
@@ -704,7 +720,7 @@ def main():
         if(g % m == 0):
             best_ind = toolbox.mutate(best_ind)
             c += 1
-            if(c == 75):
+            if(c == 50):
                 m += 20
                 c = 0
 
