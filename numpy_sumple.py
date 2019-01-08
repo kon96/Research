@@ -4,8 +4,10 @@ import re
 import time
 import copy
 import numpy as np
+import csv
 sys.path.append('/usr/local/lib/python3.6/dist-packages')
 
+from datetime import datetime
 from joblib import Parallel,delayed
 from simanneal import Annealer
 from scoop import futures
@@ -383,10 +385,10 @@ def Shift_init(pop):
 
 def employee_num(pop):
     p2 = 0
-    p2 += all_shift.check(pop) * 3
-    p2 += A.check(pop) * 3
+    p2 += all_shift.check(pop)
+    p2 += A.check(pop)
     p2 += A_SS.check(pop) * 3
-    p2 += B.check(pop) * 3
+    p2 += B.check(pop)
     p2 += B_SS.check(pop)
     p2 += B_SS_s.check(pop) * 3
     p2 += B_rq_s.check(pop)
@@ -691,7 +693,7 @@ def main():
     global origine
     start = time.time()
     pop = create_pop()
-    NGEN = 100000
+    NGEN = 20000
     m = 10
     c = 0
 
@@ -720,7 +722,7 @@ def main():
         if(g % m == 0):
             best_ind = toolbox.mutate(best_ind)
             c += 1
-            if(c == 50):
+            if(c == 60):
                 m += 20
                 c = 0
 
@@ -759,6 +761,16 @@ def main():
     result(best_pop)
     elapsed_time = (time.time() - start) / 3600 
     print("elapsed_time:{0}".format(elapsed_time) + "[h]")
+    s = r"C:\Users\imada\Desktop\Research\output" + "\\"
+    fname = s + datetime.now().strftime("%Y%m%d_%H%M%S") 
+    f = open(fname + '.csv',mode = 'w')
+    writer_d = csv.writer(f,lineterminator = '\n')
+    for i,data in enumerate(best_pop):
+        x = np.insert(data,0,i + 1)
+        print(x)
+        writer_d.writerow(x)
+
+    f.close()
 
 
 if __name__ == '__main__':
