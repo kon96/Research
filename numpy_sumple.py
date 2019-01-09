@@ -17,8 +17,11 @@ from deap import tools
 from deap import cma
 from itertools import zip_longest
 
+d_e_n_pattern1 = np.array([0,6,7,8,9,10,12,19,20,21,22,23])
+d_e_n_pattern2 = np.array([1,2,3,4,5,13,14,15,16,17,24])
+
 #ALL
-all_employees = [i for i in range(0,25)]
+all_employees = np.array([i for i in range(0,25)])
 max_num_d = np.array([11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,18,11,11,11,11,11,11,11])
 min_num_d = np.array([8,8,8,8,7,8,8,8,7,7,7,7,7,8,8,8,8,8,7,8,8,8,13,8,8,7,8,8,8,8])
 max_num_e = np.array([4 for i in range(30)])
@@ -229,6 +232,15 @@ class Shift_G(object):
 
         return enum
 
+    """def save(self,writer):
+        writer.writerow(self.d_max)
+        writer.writerow(self.d_min)
+        writer.writerow(self.e_max)
+        writer.writerow(self.e_min)
+        writer.writerow(self.n_max)
+        writer.writerow(self.n_min)
+        writer.writerow("\n")"""
+
 class LocalSearch(Annealer):
 
     def __init__(self, init_state):
@@ -387,10 +399,10 @@ def employee_num(pop):
     p2 = 0
     p2 += all_shift.check(pop)
     p2 += A.check(pop)
-    p2 += A_SS.check(pop) * 3
+    p2 += A_SS.check(pop)
     p2 += B.check(pop)
     p2 += B_SS.check(pop)
-    p2 += B_SS_s.check(pop) * 3
+    p2 += B_SS_s.check(pop)
     p2 += B_rq_s.check(pop)
     p2 += o_n.check(pop)
 
@@ -398,7 +410,7 @@ def employee_num(pop):
 
 def ShiftPattern(pop):
     penalty = 0
-    for ind in pop:
+    for i,ind in enumerate(pop):
         
         d = np.sum(ind == 1)
         e = np.sum(ind == 2)
@@ -407,12 +419,37 @@ def ShiftPattern(pop):
         f += np.sum(ind == 5)
         n_list = np.where(ind == 3)
 
-        if(d > 15):
-            penalty += 1
-        if(e > 6 or e < 4):
-            penalty += 1
-        if(n > 4 or n < 2):
-            penalty += 1
+        if(i in d_e_n_pattern1):
+            if(d > 15):
+                penalty += 1
+            if(e > 6 or e < 4):
+                penalty += 1
+            if(n > 4 or n < 2):
+                penalty += 1
+        elif(i in d_e_n_pattern2):
+            if(d > 14):
+                penalty += 1
+            if(e > 6 or e < 4):
+                penalty += 1
+            if(n > 6 or n < 3):
+                penalty += 1
+        elif(i == 12):
+            if(d > 17):
+                penalty += 1
+            if(e != 2):
+                penalty += 1
+            if(n != 2):
+                penalty += 1
+        elif(i == 18):
+            if(d > 17):
+                penalty += 1
+            if(e > 4 or e < 2):
+                penalty += 1
+            if(n > 4):
+                penalty += 1
+        else:
+            pass
+
         if(f < 9):
             penalty += 1
         """for x in n_list[0]:
@@ -523,16 +560,15 @@ def mut(individual):
 
     origine = ind
 
-    r = None
     j = random.randint(0,29)
-    i = np.where(ind[:,j] == 3)
-    r = np.random.randint(0,len(i[0]))
+    
 
     while(1):
         k = random.randint(0,24)
-        if(i[0][r] != k and ind[k][j] < 3):
+        i = random.randint(0,24)
+        if(i != k and ind[k][j] <= 3 and ind[i][j] <= 3):
             break
-    ind[i[0][r]][j],ind[k][j] = ind[k][j],ind[i[0][r]][j]
+    ind[i][j],ind[k][j] = ind[k][j],ind[i][j]
     
     day = ind[:,j]
 
@@ -693,7 +729,7 @@ def main():
     global origine
     start = time.time()
     pop = create_pop()
-    NGEN = 20000
+    NGEN = 50000
     m = 10
     c = 0
 
@@ -761,17 +797,27 @@ def main():
     result(best_pop)
     elapsed_time = (time.time() - start) / 3600 
     print("elapsed_time:{0}".format(elapsed_time) + "[h]")
+
     s = r"C:\Users\imada\Desktop\Research\output" + "\\"
     fname = s + datetime.now().strftime("%Y%m%d_%H%M%S") 
     f = open(fname + '.csv',mode = 'w')
     writer_d = csv.writer(f,lineterminator = '\n')
     for i,data in enumerate(best_pop):
         x = np.insert(data,0,i + 1)
-        print(x)
         writer_d.writerow(x)
-
     f.close()
 
+    """f1name = s + "error_list.csv"
+    f1 = open(f1name,"w")
+    write = csv.writer(f1,lineterminator = '\n')
+    A.save(write)
+    A_SS.save(write)
+    B.save(write)
+    B_SS.save(write)
+    B_SS_s.save(write)
+    B_rq_s.save(write)
+    o_n.save(write)
+    all_shift.save(write)"""
 
 if __name__ == '__main__':
     main()

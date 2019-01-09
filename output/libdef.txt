@@ -6,3 +6,9 @@
 
 'modules
 ./count.bas
+
+'modules
+./check.bas
+
+'modules
+./change.bas
