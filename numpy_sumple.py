@@ -278,13 +278,13 @@ class LocalSearch(Annealer):
         super(LocalSearch,self).__init__(init_state)
 
     def move(self):
-        while(1)
-            n1 = random.choice(list(range(len(self.state))))
+        while(1):
+            n1 = random.randint(0,23)
             n2 = n1 + 1
-            j = random.choice(list(range(len(self.state[n1])))
-            if(self.state[n1][j] <= 3 and self.state[n2][j] <= 3)
+            j = random.choice(list(range(len(self.state[n1]))))
+            if(self.state[n1][j] <= 3 and self.state[n2][j] <= 3):
                 break
-        self.state[n1][s],self.state[n1][c] = self.state[n1][c],self.state[n1][s]
+        self.state[n1][j],self.state[n2][j] = self.state[n2][j],self.state[n1][j]
 
     def energy(self):
        e = cal_p(self.state)
@@ -743,7 +743,7 @@ def simulated_annealing(pop):
                 break
     
     prob = LocalSearch(population)
-    prob.steps = 100000
+    prob.steps = 20000
     prob.copy_strategy = "deepcopy"
     prob.anneal()
 
@@ -770,7 +770,7 @@ def main():
     global origine
     start = time.time()
     pop = create_pop()
-    NGEN = 50000
+    NGEN = 25000
     m = 10
     c = 0
 
@@ -841,7 +841,7 @@ def main():
     elapsed_time = (time.time() - start) / 3600 
     print("elapsed_time:{0}".format(elapsed_time) + "[h]")
 
-    s = r"C:\Users\imada\Desktop\Research\output" + "\\"
+    s = r"C:\Users\owner\Desktop\Research\output" + "\\"
     fname = s + datetime.now().strftime("%Y%m%d_%H%M%S") 
     f = open(fname + '.csv',mode = 'w')
     writer_d = csv.writer(f,lineterminator = '\n')

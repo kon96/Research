@@ -6,41 +6,144 @@ Sub Check_Shift()
     Dim r As Integer
     Dim num As Integer
     Dim p As Integer
+    Dim g1 As Variant
+    Dim g2 As Variant
+    Dim i As Variant
+    Dim j As Variant
+    g1 = Array(2,8,9,10,11,12,14,21,22,23,23,25)
+    g2 = Array(3,4,5,6,7,15,16,17,18,19,26)
+
     p = 0
 
     For r = 33 To 36
         For num = 2 To 26
-            If r = 33 Then
-                If Sheets("Sheet1").Cells(num,r) > 15 Then 
-                    Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
-                    p = p + 10
-                Else
-                    Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(0,250,0)
+            i = Application.Match(num,g1,0)
+            j = Application.Match(num,g2,0)
+            If Not IsError(i) Then
+                If r = 33 Then
+                    If Sheets("Sheet1").Cells(num,r) > 15 Then 
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
+                        p = p + 10
+                    Else
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(0,250,0)
+                    End If
                 End If
-            End If
 
-            If r = 34 Then
-                If Sheets("Sheet1").Cells(num,r) > 6 Then 
-                    Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
-                    p = p + 10
-                ElseIf Sheets("Sheet1").Cells(num,r) < 4 Then
-                    Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
-                    p = p + 10
-                Else
-                    Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(0,250,0)
+                If r = 34 Then
+                    If Sheets("Sheet1").Cells(num,r) > 6 Then 
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
+                        p = p + 10
+                    ElseIf Sheets("Sheet1").Cells(num,r) < 4 Then
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
+                        p = p + 10
+                    Else
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(0,250,0)
+                    End If
                 End If
-            End If
 
-            If r = 35 Then
-                If Sheets("Sheet1").Cells(num,r) > 4 Then 
-                    Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
-                    p = p + 10
-                ElseIf Sheets("Sheet1").Cells(num,r) < 2 Then
-                    Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
-                    p = p + 10
-                Else
-                    Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(0,250,0)
+                If r = 35 Then
+                    If Sheets("Sheet1").Cells(num,r) > 4 Then 
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
+                        p = p + 10
+                    ElseIf Sheets("Sheet1").Cells(num,r) < 2 Then
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
+                        p = p + 10
+                    Else
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(0,250,0)
+                    End If
                 End If
+            ElseIf Not IsError(j) Then
+                If r = 33 Then
+                    If Sheets("Sheet1").Cells(num,r) > 14 Then 
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
+                        p = p + 10
+                    Else
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(0,250,0)
+                    End If
+                End If
+
+                If r = 34 Then
+                    If Sheets("Sheet1").Cells(num,r) > 6 Then 
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
+                        p = p + 10
+                    ElseIf Sheets("Sheet1").Cells(num,r) < 4 Then
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
+                        p = p + 10
+                    Else
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(0,250,0)
+                    End If
+                End If
+
+                If r = 35 Then
+                    If Sheets("Sheet1").Cells(num,r) > 6 Then 
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
+                        p = p + 10
+                    ElseIf Sheets("Sheet1").Cells(num,r) < 3 Then
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
+                        p = p + 10
+                    Else
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(0,250,0)
+                    End If
+                End If
+            ElseIf num = 14 Then
+                If r = 33 Then
+                    If Sheets("Sheet1").Cells(num,r) > 17 Then 
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
+                        p = p + 10
+                    Else
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(0,250,0)
+                    End If
+                End If
+
+                If r = 34 Then
+                    If Sheets("Sheet1").Cells(num,r) <> 2 Then 
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
+                        p = p + 10
+                    Else
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(0,250,0)
+                    End If
+                End If
+
+                If r = 35 Then
+                    If Sheets("Sheet1").Cells(num,r) <> 2 Then 
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
+                        p = p + 10
+                    Else
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(0,250,0)
+                    End If
+                End If
+            ElseIf num = 20 Then
+                If r = 33 Then
+                    If Sheets("Sheet1").Cells(num,r) > 17 Then 
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
+                        p = p + 10
+                    Else
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(0,250,0)
+                    End If
+                End If
+
+                If r = 34 Then
+                    If Sheets("Sheet1").Cells(num,r) > 4 Then 
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
+                        p = p + 10
+                    ElseIf Sheets("Sheet1").Cells(num,r) < 2 Then
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
+                        p = p + 10
+                    Else
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(0,250,0)
+                    End If
+                End If
+
+                If r = 35 Then
+                    If Sheets("Sheet1").Cells(num,r) <> 4 Then 
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
+                        p = p + 10
+                    Else
+                        Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(0,250,0)
+                    End If
+                End If
+            Else
+            
             End If
 
             If r = 36 Then
