@@ -241,7 +241,7 @@ class Shift_G(object):
         writer.writerow(self.n_min)
         writer.writerow("\n")"""
 
-class LocalSearch(Annealer):
+"""class LocalSearch(Annealer):
 
     def __init__(self, init_state):
         super(LocalSearch,self).__init__(init_state)
@@ -266,6 +266,24 @@ class LocalSearch(Annealer):
                         self.state[n2][s],self.state[n2][c] = self.state[n2][c],self.state[n2][s]
             break
     
+        self.state[n1][s],self.state[n1][c] = self.state[n1][c],self.state[n1][s]
+
+    def energy(self):
+       e = cal_p(self.state)
+       return e"""
+
+class LocalSearch(Annealer):
+
+    def __init__(self, init_state):
+        super(LocalSearch,self).__init__(init_state)
+
+    def move(self):
+        while(1)
+            n1 = random.choice(list(range(len(self.state))))
+            n2 = n1 + 1
+            j = random.choice(list(range(len(self.state[n1])))
+            if(self.state[n1][j] <= 3 and self.state[n2][j] <= 3)
+                break
         self.state[n1][s],self.state[n1][c] = self.state[n1][c],self.state[n1][s]
 
     def energy(self):
@@ -701,8 +719,31 @@ def create_pop():
 
 def simulated_annealing(pop):
     population = copy.deepcopy(pop)
+    j = random.randint(0,29)
+    day = population[:,j]
+    d = np.sum(population[:,j] == 1)
+    f = np.sum(population[:,j] == 0)
+    count = 0
+
+    f_list = np.where(day == 0)
+    d_list = np.where(day == 1)
+    if((len(f_list[0]) - 1) >= 1 and (len(d_list[0]) - 1) >= 1):
+        while(1):
+            count += 1
+            r = random.randint(0,1)
+            if(r == 0 and f > min_num_f[j] and f <= max_num_f[j] and (d + 1) <= max_num_d[j]):
+                z = f_list[0][np.random.randint(0,len(f_list[0]))]
+                population[z][j] = 1
+                break
+            elif(r == 1 and d > min_num_d[j] and d <= max_num_d[j] and (f + 1) <= max_num_f[j]):
+                z = d_list[0][np.random.randint(0,len(d_list[0]))]
+                population[z][j] = 0
+                break
+            elif(count == 10):
+                break
+    
     prob = LocalSearch(population)
-    prob.steps = 10000
+    prob.steps = 100000
     prob.copy_strategy = "deepcopy"
     prob.anneal()
 
@@ -791,9 +832,11 @@ def main():
             best_fits = fits1
             best_pop = copy.deepcopy(pop)
             origine = copy.deepcopy(best_pop)
+            best_generation = g
 
     print("-- End of (successful) evolution --")
     print("Best individual is ")
+    print("Generation %d" % best_generation)
     result(best_pop)
     elapsed_time = (time.time() - start) / 3600 
     print("elapsed_time:{0}".format(elapsed_time) + "[h]")
