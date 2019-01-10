@@ -129,11 +129,11 @@ other = np.array([
 ])
 
 #禁止勤務パターン
-b_shift = ['[0|5][1-4][0|5]','[1-4]{7}','[0|5]{6}','[1]{8}',
-           '[3][0-5][3]','[3][0-5]{2}[3]','[3][0-5]{3}[3]',
+b_shift = ['[0|5][1-4][0|5]','[1-4]{7}','[0|5]{6}','[1][^1]{7}',
+           '[^3][3][^3]','[3][0-5]{2}[3]','[3][0-5]{3}[3]',
            '[3][0-5]{4}[3]','[3][0-5]{5}[3]','[3]{3}',
-           '[1]{5}','[2]{4}','[3][1]','[3][2]','[2][1]',
-           '[3][0|5][1]'
+           '[1]{5}','[2]{4}','[3][1]','[3][2]','[3][4]','[2][1]',
+           '[2][4]','[3][0|5][1]'
 ]
 
 
@@ -435,7 +435,6 @@ def ShiftPattern(pop):
         n = np.sum(ind == 3)
         f = np.sum(ind == 0)
         f += np.sum(ind == 5)
-        n_list = np.where(ind == 3)
 
         if(i in d_e_n_pattern1):
             if(d > 15):
@@ -470,16 +469,6 @@ def ShiftPattern(pop):
 
         if(f < 9):
             penalty += 1
-        """for x in n_list[0]:
-            if( x == 0):
-                if(x + 1 != 3):
-                    penalty += 1
-            elif( x == len(ind) - 1):
-                if(x - 1 != 3):
-                    penalty += 1
-            else:
-                if(x + 1 != 3 and x - 1 != 3):
-                    penalty += 1"""
 
         map_l = map(str,ind)
         pattern = ''.join(map_l)
@@ -617,7 +606,7 @@ def cal_p(pop):
     num2 = employee_num(pop) 
     num3 = ShiftPattern(pop)
     
-    penalty = num2 + (num3 * 10)
+    penalty = num2 + (num3 * 100)
 
     return penalty
 
@@ -770,7 +759,7 @@ def main():
     global origine
     start = time.time()
     pop = create_pop()
-    NGEN = 25000
+    NGEN = 50000
     m = 10
     c = 0
 
