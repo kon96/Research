@@ -719,29 +719,6 @@ def create_pop():
 
 def simulated_annealing(pop):
     population = copy.deepcopy(pop)
-    j = random.randint(0,29)
-    day = population[:,j]
-    d = np.sum(population[:,j] == 1)
-    f = np.sum(population[:,j] == 0)
-    count = 0
-
-    f_list = np.where(day == 0)
-    d_list = np.where(day == 1)
-    if((len(f_list[0]) - 1) >= 1 and (len(d_list[0]) - 1) >= 1):
-        while(1):
-            count += 1
-            r = random.randint(0,1)
-            if(r == 0 and f > min_num_f[j] and f <= max_num_f[j] and (d + 1) <= max_num_d[j]):
-                z = f_list[0][np.random.randint(0,len(f_list[0]))]
-                population[z][j] = 1
-                break
-            elif(r == 1 and d > min_num_d[j] and d <= max_num_d[j] and (f + 1) <= max_num_f[j]):
-                z = d_list[0][np.random.randint(0,len(d_list[0]))]
-                population[z][j] = 0
-                break
-            elif(count == 10):
-                break
-    
     prob = LocalSearch(population)
     prob.steps = 20000
     prob.copy_strategy = "deepcopy"
@@ -770,7 +747,7 @@ def main():
     global origine
     start = time.time()
     pop = create_pop()
-    NGEN = 25000
+    NGEN = 50000
     m = 10
     c = 0
 
@@ -834,6 +811,8 @@ def main():
             origine = copy.deepcopy(best_pop)
             best_generation = g
 
+    #best_pop = simulated_annealing(pop)
+    #fits1 = cal_p(pop)
     print("-- End of (successful) evolution --")
     print("Best individual is ")
     print("Generation %d" % best_generation)
@@ -841,7 +820,7 @@ def main():
     elapsed_time = (time.time() - start) / 3600 
     print("elapsed_time:{0}".format(elapsed_time) + "[h]")
 
-    s = r"C:\Users\owner\Desktop\Research\output" + "\\"
+    s = r"C:\Users\imada\Desktop\Research\output" + "\\"
     fname = s + datetime.now().strftime("%Y%m%d_%H%M%S") 
     f = open(fname + '.csv',mode = 'w')
     writer_d = csv.writer(f,lineterminator = '\n')
