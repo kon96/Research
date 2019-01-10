@@ -594,7 +594,7 @@ Sub Check_Hard()
                     count = count + 1
                 End If
 
-                If p3 = 5 Then
+                If p3 = 6 Then
                     For k = (j - p3 + 1) To j
                         Cells(i,k).Interior.Color = RGB(0,250,0)
                     Next
