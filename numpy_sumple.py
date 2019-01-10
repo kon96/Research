@@ -830,7 +830,7 @@ def main():
     elapsed_time = (time.time() - start) / 3600 
     print("elapsed_time:{0}".format(elapsed_time) + "[h]")
 
-    s = r"C:\Users\owner\Desktop\Research\output" + "\\"
+    s = r"C:\Users\owner\Desktop\Research\output\csv" + "\\"
     fname = s + datetime.now().strftime("%Y%m%d_%H%M%S") 
     f = open(fname + '.csv',mode = 'w')
     writer_d = csv.writer(f,lineterminator = '\n')
