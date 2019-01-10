@@ -556,6 +556,7 @@ Sub Check_Hard()
     Dim p13 As Integer
     Dim p14 As Integer
     Dim p15 As Integer
+    Dim p16 As Integer
     p1 = 0
     p2 = 0
     p3 = 0
@@ -571,6 +572,7 @@ Sub Check_Hard()
     p13 = 0
     p14 = 0
     p15 = 0
+    p16 = 0
     
     For i = 2 To 26
         For j = 2 To 31
@@ -587,9 +589,9 @@ Sub Check_Hard()
                 ElseIf p1 = 1 Then
                     p1 = 0
                 ElseIf p1 = 2 Then
-                    Cells(i,j).Interior.Color = RGB(250,0,0)
-                    Cells(i,j - 1).Interior.Color = RGB(250,0,0)
-                    Cells(i,j - 2).Interior.Color = RGB(250,0,0)
+                    Cells(i,j).Interior.Color = RGB(156,167,22)
+                    Cells(i,j - 1).Interior.Color = RGB(156,167,22)
+                    Cells(i,j - 2).Interior.Color = RGB(156,167,22)
                     p1 = 0
                     count = count + 1
                 End If
@@ -617,6 +619,17 @@ Sub Check_Hard()
                 If p15 = 1 Then
                     p15 = p15 + 1
                 End If
+
+                If p16 = 0 Then
+                    p16 = p16 + 1
+                ElseIf p16 = 2
+                    Cells(i,j).Interior.Color = RGB(156,167,22)
+                    Cells(i,j - 1).Interior.Color = RGB(156,167,22)
+                    Cells(i,j - 2).Interior.Color = RGB(156,167,22)
+                    p16 = 1
+                    count = count + 1
+                End If
+                
 
             ElseIf Cells(i,j).Value = 1 Then
                 p2 = p2 + 1
@@ -668,6 +681,16 @@ Sub Check_Hard()
                     p14 = 0
                     count = count + 1
                 End If
+
+                If p16 = 0 Then
+                    p16 = p16 + 1
+                ElseIf p16 = 2
+                    Cells(i,j).Interior.Color = RGB(156,167,22)
+                    Cells(i,j - 1).Interior.Color = RGB(156,167,22)
+                    Cells(i,j - 2).Interior.Color = RGB(156,167,22)
+                    p16 = 1
+                    count = count + 1
+                End If
             ElseIf Cells(i,j).Value = 2 Then
                 p2 = p2 + 1
                 p3 = 0
@@ -702,6 +725,16 @@ Sub Check_Hard()
                     Cells(i,j).Interior.Color = RGB(50,204,18)
                     Cells(i,j -1).Interior.Color = RGB(50,204,18)
                     p11 = 0
+                    count = count + 1
+                End If
+
+                If p16 = 0 Then
+                    p16 = p16 + 1
+                ElseIf p16 = 2
+                    Cells(i,j).Interior.Color = RGB(156,167,22)
+                    Cells(i,j - 1).Interior.Color = RGB(156,167,22)
+                    Cells(i,j - 2).Interior.Color = RGB(156,167,22)
+                    p16 = 1
                     count = count + 1
                 End If
             ElseIf Cells(i,j).Value = 3 Then
@@ -789,6 +822,12 @@ Sub Check_Hard()
                     Cells(i,j -2).Interior.Color = RGB(226,159,167)
                     p15 = 0
                     count = count + 1
+                End If
+
+                If p16 = 1 Then
+                    p16 = p16 + 1
+                ElseIf p16 = 2
+                    p16 = 0
                 End If
 
             Else
