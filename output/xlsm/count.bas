@@ -499,7 +499,7 @@ End Sub
 Sub All_Count()
 
     Workbooks("penalty.xlsm").Sheets("sheet1").Range("A1:AE93").Delete
-    Workbooks("penalty 20.xlsm").Sheets("sheet1").Range("A28:J29").Delete
+    Workbooks(ActiveWorkbook.Name).Sheets("sheet1").Range("A28:J29").Delete
     Call Copy
     Call Count_A
     Call Count_A_SS
