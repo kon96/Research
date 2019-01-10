@@ -622,7 +622,7 @@ Sub Check_Hard()
 
                 If p16 = 0 Then
                     p16 = p16 + 1
-                ElseIf p16 = 2
+                ElseIf p16 = 2 Then
                     Cells(i,j).Interior.Color = RGB(156,167,22)
                     Cells(i,j - 1).Interior.Color = RGB(156,167,22)
                     Cells(i,j - 2).Interior.Color = RGB(156,167,22)
@@ -684,7 +684,7 @@ Sub Check_Hard()
 
                 If p16 = 0 Then
                     p16 = p16 + 1
-                ElseIf p16 = 2
+                ElseIf p16 = 2 Then
                     Cells(i,j).Interior.Color = RGB(156,167,22)
                     Cells(i,j - 1).Interior.Color = RGB(156,167,22)
                     Cells(i,j - 2).Interior.Color = RGB(156,167,22)
@@ -730,7 +730,7 @@ Sub Check_Hard()
 
                 If p16 = 0 Then
                     p16 = p16 + 1
-                ElseIf p16 = 2
+                ElseIf p16 = 2 Then
                     Cells(i,j).Interior.Color = RGB(156,167,22)
                     Cells(i,j - 1).Interior.Color = RGB(156,167,22)
                     Cells(i,j - 2).Interior.Color = RGB(156,167,22)
@@ -783,6 +783,12 @@ Sub Check_Hard()
                     p15 = p15 + 1
                 End If
 
+                If p16 = 1 Then
+                    p16 = p16 + 1
+                ElseIf p16 = 2 Then
+                    p16 = 0
+                End If
+
             ElseIf Cells(i,j).Value = 4 Then
                 p2 = p2 + 1
                 p3 = 0
@@ -824,10 +830,14 @@ Sub Check_Hard()
                     count = count + 1
                 End If
 
-                If p16 = 1 Then
+                If p16 = 0 Then
                     p16 = p16 + 1
-                ElseIf p16 = 2
-                    p16 = 0
+                ElseIf p16 = 2 Then
+                    Cells(i,j).Interior.Color = RGB(156,167,22)
+                    Cells(i,j - 1).Interior.Color = RGB(156,167,22)
+                    Cells(i,j - 2).Interior.Color = RGB(156,167,22)
+                    p16 = 1
+                    count = count + 1
                 End If
 
             Else
@@ -896,6 +906,7 @@ Sub Check_Hard()
         p13 = 0
         p14 = 0
         p15 = 0
+        p16 = 0
     Next
 
     Sheets("Sheet1").Cells(29,1).Value =  Sheets("Sheet1").Cells(29,1).Value + count
