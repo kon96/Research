@@ -3,10 +3,10 @@ import sys
 import re
 import time
 import copy
-import numpy as np
 import csv
-sys.path.append('/usr/local/lib/python3.6/dist-packages')
 
+sys.path.append('/usr/local/lib/python3.6/dist-packages')
+from multiprocessing import Pool
 from datetime import datetime
 from joblib import Parallel,delayed
 from simanneal import Annealer
@@ -16,6 +16,8 @@ from deap import creator
 from deap import tools
 from deap import cma
 from itertools import zip_longest
+
+import numpy as np
 
 d_e_n_pattern1 = np.array([0,6,7,8,9,10,12,19,20,21,22,23])
 d_e_n_pattern2 = np.array([1,2,3,4,5,13,14,15,16,17,24])
@@ -94,7 +96,6 @@ min_num_B_e = np.array([2 for i in range(30)])
 max_num_B_n = np.array([2 for i in range(30)])
 min_num_B_n = np.array([1 for i in range(30)])
 
-#勤務希望
 request = np.array([ 
     [],
     [1,8,17],
@@ -123,12 +124,10 @@ request = np.array([
     []
 ])
 
-#その他の勤務
 other = np.array([
     [],[12],[],[19],[],[],[],[9],[],[0,15],[15],[15],[6],[9],[],[12,20],[12],[19],[6,15],[29],[29],[0,29],[29],[],[]
 ])
 
-#禁止勤務パターン
 b_shift = ['[0|5][1-4][0|5]','[1-4]{7}','[0|5]{6}','[1][^1]{7}',
            '[^3][3][^3]','[3][0-5]{2}[3]','[3][0-5]{3}[3]',
            '[3][0-5]{4}[3]','[3][0-5]{5}[3]','[3]{3}',
@@ -450,11 +449,7 @@ def ShiftPattern(pop):
                 penalty += 1
             if(n > 6 or n < 3):
                 penalty += 1
-<<<<<<< HEAD
         elif(i == 11):
-=======
-        elif(i == 1):
->>>>>>> a5842f1c1789ecc353aafe0a71cef13d50694c7c
             if(d > 17):
                 penalty += 1
             if(e != 2):
@@ -768,7 +763,11 @@ def main():
         offspring = pop
 
         ind_list = toolbox.mate(offspring)
-        fitnesses = Parallel(n_jobs=-1)( [delayed(cal_p)(ind) for ind in ind_list])
+
+        #fitnesses = Parallel(n_jobs=-1)( [delayed(cal_p)(ind) for ind in ind_list])
+        with Pool(processes = 7) as p:
+            fitnesses= p.map(cal_p,ind_list) 
+
         i = fitnesses.index(min(fitnesses))
 
         best_ind = ind_list[i]
