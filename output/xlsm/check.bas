@@ -10,7 +10,7 @@ Sub Check_Shift()
     Dim g2 As Variant
     Dim i As Variant
     Dim j As Variant
-    g1 = Array(2,8,9,10,11,12,14,21,22,23,23,25)
+    g1 = Array(2,8,9,10,11,12,14,21,22,23,24,25)
     g2 = Array(3,4,5,6,7,15,16,17,18,19,26)
 
     p = 0
@@ -85,7 +85,7 @@ Sub Check_Shift()
                         Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(0,250,0)
                     End If
                 End If
-            ElseIf num = 14 Then
+            ElseIf num = 13 Then
                 If r = 33 Then
                     If Sheets("Sheet1").Cells(num,r) > 17 Then 
                         Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)

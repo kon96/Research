@@ -450,7 +450,7 @@ def ShiftPattern(pop):
                 penalty += 1
             if(n > 6 or n < 3):
                 penalty += 1
-        elif(i == 12):
+        elif(i == 11):
             if(d > 17):
                 penalty += 1
             if(e != 2):

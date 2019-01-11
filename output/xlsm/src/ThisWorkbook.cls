@@ -1,4 +1,4 @@
-' Text Scripting on VBA v1.0.0
+﻿' Text Scripting on VBA v1.0.0
 ' last update: 2013-01-03
 ' HATANO Hirokazu
 '
