@@ -474,7 +474,7 @@ def ShiftPattern(pop):
             if(ind[1] != 3):
                 penalty += 1
         if(ind[29] == 3):
-            if(ind[28]):
+            if(ind[28] != 3):
                 penalty += 1
 
         map_l = map(str,ind)
