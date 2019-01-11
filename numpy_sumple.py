@@ -450,7 +450,7 @@ def ShiftPattern(pop):
                 penalty += 1
             if(n > 6 or n < 3):
                 penalty += 1
-        elif(i == 12):
+        elif(i == 11):
             if(d > 17):
                 penalty += 1
             if(e != 2):
@@ -809,7 +809,7 @@ def main():
     elapsed_time = (time.time() - start) / 3600 
     print("elapsed_time:{0}".format(elapsed_time) + "[h]")
 
-    s = r"C:\Users\owner\Desktop\Research\output\csv" + "\\"
+    s = r"C:\Users\tanabe_lab\Desktop\Research\output\csv" + "\\"
     fname = s + datetime.now().strftime("%Y%m%d_%H%M%S") 
     f = open(fname + '.csv',mode = 'w')
     writer_d = csv.writer(f,lineterminator = '\n')
