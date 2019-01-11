@@ -907,6 +907,16 @@ Sub Check_Hard()
         p14 = 0
         p15 = 0
         p16 = 0
+        If Cells(i,2).Value = 3 and Cells(i,3).Value <> 3  Then
+            Cells(i,2).Interior.Color = RGB(156,167,22)
+            Cells(i,3).Interior.Color = RGB(156,167,22)
+            count = count + 1
+        End If
+        If Cells(i,31).Value = 3 and Cells(i,30).Value <> 3  Then
+            Cells(i,31).Interior.Color = RGB(156,167,22)
+            Cells(i,30).Interior.Color = RGB(156,167,22)
+            count = count + 1
+        End If
     Next
 
     Sheets("Sheet1").Cells(29,1).Value =  Sheets("Sheet1").Cells(29,1).Value + count
