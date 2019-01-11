@@ -450,7 +450,7 @@ def ShiftPattern(pop):
                 penalty += 1
             if(n > 6 or n < 3):
                 penalty += 1
-        elif(i == 11):
+        elif(i == 1):
             if(d > 17):
                 penalty += 1
             if(e != 2):
@@ -469,6 +469,13 @@ def ShiftPattern(pop):
 
         if(f < 9):
             penalty += 1
+
+        if(ind[i][0] == 3):
+            if(ind[i][1] != 3):
+                penalty += 1
+        if(ind[i][29] == 3):
+            if(ind[i][28]):
+                penalty += 1
 
         map_l = map(str,ind)
         pattern = ''.join(map_l)
