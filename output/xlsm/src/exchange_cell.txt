@@ -1,0 +1,30 @@
+﻿Public flg As Integer
+Public naiyo1, naiyo2, basho1, basho2 As String
+Private Sub Worksheet_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean)
+'左ダブルクリックで交換対象指定
+'
+ActiveCell.Select
+If flg = 1 Then GoTo lblKOKAN        '２回目のクリックで交換作業に跳ぶ
+
+basho1 = ActiveCell.Address          '最初のセル位置　記憶
+naiyo1 = ActiveCell.Value            ' 内容　　記憶
+
+flg = 1                              '１回目通過したFLAG
+
+GoTo lblMOTO            '１回目は覚えるだけなので、交換作業をSKIP
+
+lblKOKAN:                            '２回目のクリックで交換開始
+basho2 = ActiveCell.Address
+naiyo2 = ActiveCell.Value
+
+ActiveCell = naiyo1
+
+Range(basho1).Select              'セルのデータを最初の場所に移動させる
+ActiveCell = naiyo2
+
+flg = 0                            'FLAGの初期化
+
+lblMOTO:
+
+End Sub
+

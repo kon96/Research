@@ -496,6 +496,49 @@ Sub Count_Staff()
     Next
 End Sub
 
+sub Shift_Count()
+    Dim i As Integer
+    Dim j As Integer
+    Dim d As Integer
+    Dim e As Integer
+    Dim n As Integer
+    Dim f As Integer
+    d = 0
+    n = 0
+    e = 0
+    f = 0
+
+    Cells(1,33).Value = "d"
+    Cells(1,34).Value = "e"
+    Cells(1,35).Value = "n"
+    Cells(1,36).Value = "f"
+
+    For i = 2 To 26
+        For j = 2 To 31
+            If Cells(i,j).Value = 1 Then
+                d = d + 1
+            ElseIf Cells(i,j).Value = 2 Then
+                e = e + 1
+            ElseIf Cells(i,j).Value = 3 Then
+                n = n + 1
+            ElseIf Cells(i,j).Value = 0 or Cells(i,j).Value = 5 Then
+                f = f + 1
+            Else
+            End If
+        Next
+
+        Cells(i,33).Value = d
+        Cells(i,34).Value = e
+        Cells(i,35).Value = n
+        Cells(i,36).Value = f
+        d = 0
+        n = 0
+        e = 0
+        f = 0
+    Next
+
+End sub
+
 Sub All_Count()
 
     Workbooks("penalty.xlsm").Sheets("sheet1").Range("A1:AE93").Delete
@@ -509,5 +552,6 @@ Sub All_Count()
     Call Count_B_rq_s
     Call Count_o_n
     Call Count_Staff
+    Call Shift_Count
 
 End Sub

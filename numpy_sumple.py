@@ -450,7 +450,11 @@ def ShiftPattern(pop):
                 penalty += 1
             if(n > 6 or n < 3):
                 penalty += 1
+<<<<<<< HEAD
         elif(i == 11):
+=======
+        elif(i == 1):
+>>>>>>> a5842f1c1789ecc353aafe0a71cef13d50694c7c
             if(d > 17):
                 penalty += 1
             if(e != 2):
@@ -469,6 +473,13 @@ def ShiftPattern(pop):
 
         if(f < 9):
             penalty += 1
+
+        if(ind[0] == 3):
+            if(ind[1] != 3):
+                penalty += 1
+        if(ind[29] == 3):
+            if(ind[28] != 3):
+                penalty += 1
 
         map_l = map(str,ind)
         pattern = ''.join(map_l)
@@ -809,7 +820,11 @@ def main():
     elapsed_time = (time.time() - start) / 3600 
     print("elapsed_time:{0}".format(elapsed_time) + "[h]")
 
+<<<<<<< HEAD
     s = r"C:\Users\tanabe_lab\Desktop\Research\output\csv" + "\\"
+=======
+    s = r"C:\Users\imada\Desktop\Research\output\csv" + "\\"
+>>>>>>> a5842f1c1789ecc353aafe0a71cef13d50694c7c
     fname = s + datetime.now().strftime("%Y%m%d_%H%M%S") 
     f = open(fname + '.csv',mode = 'w')
     writer_d = csv.writer(f,lineterminator = '\n')
