@@ -501,7 +501,7 @@ def cxTwoPoint(pop):
     t_list = []
     point_set = []
     ind_list = []
-    for i in range(150):
+    for i in range(200):
         copy1 = copy.deepcopy(pop)
         copy2 = copy.deepcopy(pop)
         while(1):
@@ -623,7 +623,7 @@ def cal_p(pop):
     num2 = employee_num(pop) 
     num3 = ShiftPattern(pop)
     
-    penalty = num2 + (num3 * 50)
+    penalty = num2 + (num3 * 100)
 
     return penalty
 
@@ -776,7 +776,7 @@ def main():
 
         #fitnesses = Parallel(n_jobs=-1)( [delayed(cal_p)(ind) for ind in ind_list])
         with Pool(processes = 7) as p:
-            fitnesses= p.map(cal_p,ind_list) 
+            fitnesses = p.map(cal_p,ind_list) 
 
         i = fitnesses.index(min(fitnesses))
 
@@ -800,15 +800,16 @@ def main():
         
         fits2 = fits1
 
-        if(count == 50):
+        """if(count == 50):
             pop = simulated_annealing(pop)
             fits1 = cal_p(pop)
-            count = 0
+            count = 0"""
 
         num2,num3 = cal_enum(pop)
         print("fits1 = %f" % fits1)
         print("enum2 = %f" % num2)
         print("enum3 = %f" % num3)
+        elapsed_time = (time.time() - start) / 3600 
         ind_list.clear()
 
         if(fits1 == 0):
