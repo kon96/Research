@@ -817,7 +817,7 @@ def main():
             origine = copy.deepcopy(best_pop)
             best_generation = g
 
-    best_pop = simulated_annealing(pop)
+    #best_pop = simulated_annealing(pop)
     fits1 = cal_p(pop)
     print("-- End of (successful) evolution --")
     print("Best individual is ")
