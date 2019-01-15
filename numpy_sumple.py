@@ -742,7 +742,7 @@ def main():
     global origine
     start = time.time()
     pop = create_pop()
-    NGEN = 50000
+    NGEN = 40000
     m = 10
     c = 0
 
