@@ -279,7 +279,7 @@ class LocalSearch(Annealer):
 
     def move(self):
         while(1):
-            n1 = random.randint(0,28)
+            n1 = random.randint(0,29)
             n2 = n1 + random.randint(-3,3)
             if(n2 == n1 or n2 > 29 or n2 < 0):
                 continue
@@ -287,11 +287,14 @@ class LocalSearch(Annealer):
             if(self.state[j][n1] <= 3 and self.state[j][n2] <= 3):
                 break
 
-        k1 = random.choice(np.where(self.state[:,n1] == self.state[j][n2]))
-        k2 = random.choice((np.where(self.state[:,n2] == self.state[j][n1]))) 
+        ind1 = np.where(self.state[:,n1] == self.state[j][n2])
+        ind2 = np.where(self.state[:,n2] == self.state[j][n1])
+
+        k1 = ind1[0][random.choice(list(range(len(ind1))))]
+        k2 = ind2[0][random.choice(list(range(len(ind2))))] 
 
         self.state[j][n1],self.state[j][n2] = self.state[j][n2],self.state[j][n1]
-        self.state[j][k1],self.state[j][k2] = self.state[j][k2],self.state[j][k1]
+        self.state[k1][n1],self.state[k2][n2] = self.state[k2][n2],self.state[k1][n1]
         
 
     def energy(self):
@@ -770,7 +773,6 @@ def main():
        
         print("-- Generation %i --" % g)
         offspring = pop
-
         ind_list = toolbox.mate(offspring)
         fitnesses = Parallel(n_jobs=-1)( [delayed(cal_p)(ind) for ind in ind_list])
         i = fitnesses.index(min(fitnesses))
@@ -815,8 +817,8 @@ def main():
             origine = copy.deepcopy(best_pop)
             best_generation = g
 
-    #best_pop = simulated_annealing(pop)
-    #fits1 = cal_p(pop)
+    best_pop = simulated_annealing(pop)
+    fits1 = cal_p(pop)
     print("-- End of (successful) evolution --")
     print("Best individual is ")
     print("Generation %d" % best_generation)
