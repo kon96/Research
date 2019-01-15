@@ -753,7 +753,7 @@ def main():
     global origine
     start = time.time()
     pop = create_pop()
-    NGEN = 40000
+    NGEN = 50000
     m = 10
     c = 0
 
@@ -785,7 +785,7 @@ def main():
         if(g % m == 0):
             best_ind = toolbox.mutate(best_ind)
             c += 1
-            if(c == 60):
+            if(c == 50):
                 m += 20
                 c = 0
 
@@ -829,7 +829,7 @@ def main():
     elapsed_time = (time.time() - start) / 3600 
     print("elapsed_time:{0}".format(elapsed_time) + "[h]")
 
-    s = r"C:\Users\owner\Desktop\Research\output\csv" + "\\"
+    s = "/home/imada/Desktop/Research/output/csv/"
     fname = s + datetime.now().strftime("%Y%m%d_%H%M%S") 
     f = open(fname + '.csv',mode = 'w')
     writer_d = csv.writer(f,lineterminator = '\n')
