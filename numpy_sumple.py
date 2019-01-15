@@ -278,12 +278,23 @@ class LocalSearch(Annealer):
 
     def move(self):
         while(1):
-            n1 = random.randint(0,23)
-            n2 = n1 + 1
-            j = random.choice(list(range(len(self.state[n1]))))
-            if(self.state[n1][j] <= 3 and self.state[n2][j] <= 3):
+            n1 = random.randint(0,29)
+            n2 = n1 + random.randint(-3,3)
+            if(n2 == n1 or n2 > 29 or n2 < 0):
+                continue
+            j = random.choice(list(range(len(self.state))))
+            if(self.state[j][n1] <= 3 and self.state[j][n2] <= 3):
                 break
-        self.state[n1][j],self.state[n2][j] = self.state[n2][j],self.state[n1][j]
+
+        ind1 = np.where(self.state[:,n1] == self.state[j][n2])
+        ind2 = np.where(self.state[:,n2] == self.state[j][n1])
+
+        k1 = ind1[0][random.choice(list(range(len(ind1))))]
+        k2 = ind2[0][random.choice(list(range(len(ind2))))] 
+
+        self.state[j][n1],self.state[j][n2] = self.state[j][n2],self.state[j][n1]
+        self.state[k1][n1],self.state[k2][n2] = self.state[k2][n2],self.state[k1][n1]
+        
 
     def energy(self):
        e = cal_p(self.state)
@@ -612,7 +623,7 @@ def cal_p(pop):
     num2 = employee_num(pop) 
     num3 = ShiftPattern(pop)
     
-    penalty = num2 + (num3 * 100)
+    penalty = num2 + (num3 * 50)
 
     return penalty
 
@@ -761,7 +772,6 @@ def main():
        
         print("-- Generation %i --" % g)
         offspring = pop
-
         ind_list = toolbox.mate(offspring)
 
         #fitnesses = Parallel(n_jobs=-1)( [delayed(cal_p)(ind) for ind in ind_list])
@@ -811,7 +821,7 @@ def main():
             best_generation = g
 
     #best_pop = simulated_annealing(pop)
-    #fits1 = cal_p(pop)
+    fits1 = cal_p(pop)
     print("-- End of (successful) evolution --")
     print("Best individual is ")
     print("Generation %d" % best_generation)
@@ -819,7 +829,7 @@ def main():
     elapsed_time = (time.time() - start) / 3600 
     print("elapsed_time:{0}".format(elapsed_time) + "[h]")
 
-    s = r"C:\Users\tanabe_lab\Desktop\Research\output\csv" + "\\"
+    s = r"C:\Users\owner\Desktop\Research\output\csv" + "\\"
     fname = s + datetime.now().strftime("%Y%m%d_%H%M%S") 
     f = open(fname + '.csv',mode = 'w')
     writer_d = csv.writer(f,lineterminator = '\n')
