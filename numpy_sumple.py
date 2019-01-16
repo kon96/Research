@@ -22,6 +22,34 @@ import numpy as np
 d_e_n_pattern1 = np.array([0,6,7,8,9,10,12,19,20,21,22,23])
 d_e_n_pattern2 = np.array([1,2,3,4,5,13,14,15,16,17,24])
 
+prov_shift = np.array([
+    [1,2,0,0,1,1],
+    [1,1,0,1,1,3],
+    [3,0,2,2,2,4],
+    [4,0,1,3,3,0],
+    [1,1,0,0,0,0],
+    [2,3,3,0,1,2],
+    [2,0,0,2,2,2],
+    [1,1,1,1,0,1],
+    [1,0,0,1,3,3],
+    [0,0,1,1,1,1],
+    [1,1,1,0,1,1],
+    [0,1,1,0,0,0],
+    [0,2,2,0,0,1],
+    [1,2,0,1,1,1],
+    [2,0,3,3,0,4],
+    [0,1,1,1,2,0],
+    [3,3,0,0,1,2],
+    [1,1,2,2,3,3],
+    [1,0,3,3,0,1],
+    [1,1,0,0,0,1],
+    [4,0,1,1,1,2],
+    [2,2,2,0,1,1],
+    [0,1,1,2,2,0],
+    [3,3,0,1,1,1],
+    [1,1,1,0,0,1]
+])
+
 #ALL
 all_employees = np.array([i for i in range(0,25)])
 max_num_d = np.array([11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,18,11,11,11,11,11,11,11])
@@ -96,6 +124,7 @@ min_num_B_e = np.array([2 for i in range(30)])
 max_num_B_n = np.array([2 for i in range(30)])
 min_num_B_n = np.array([1 for i in range(30)])
 
+
 request = np.array([ 
     [],
     [1,8,17],
@@ -149,11 +178,11 @@ class Nurse(object):
     def req_init(self):
         if(len(self.request) != 0):
             for i in self.request:
-                self.shift[i] = 5
+                self.shift[i + 6] = 5
 
         if(len(self.other) != 0):
             for j in self.other:
-                self.shift[j] = 4
+                self.shift[j + 6] = 4
     
     def check(self):
         penalty = 0
@@ -197,20 +226,20 @@ class Shift_G(object):
         self.n = 0
         self.f = 0
         self.group = group
-        self.shift = np.empty((len(group),30),int)
+        self.shift = np.empty((len(group),36),int)
     
     def check(self,pop):
         penalty = 0
         for i,g in enumerate(self.group):
-            self.shift[i][:] = pop[g][:]
+            self.shift[i][6:] = pop[g][6:]
             
         self.d = np.sum(self.shift == 1, axis = 0)
         self.e = np.sum(self.shift == 2, axis = 0)
         self.n = np.sum(self.shift == 3, axis = 0)
 
-        p1 = np.sum((self.d_max < self.d) | (self.d_min > self.d))
-        p2 = np.sum((self.e_max < self.e) | (self.e_min > self.e))
-        p3 = np.sum((self.n_max < self.n) | (self.n_min > self.n))
+        p1 = np.sum((self.d_max < self.d[6:]) | (self.d_min > self.d[6:]))
+        p2 = np.sum((self.e_max < self.e[6:]) | (self.e_min > self.e[6:]))
+        p3 = np.sum((self.n_max < self.n[6:]) | (self.n_min > self.n[6:]))
 
         penalty =  p1 + p2 + p3
         return penalty 
@@ -219,15 +248,15 @@ class Shift_G(object):
         enum = 0
 
         for i,g in enumerate(self.group):
-            self.shift[i][:] = pop[g][:]
+            self.shift[i][6:] = pop[g][6:]
             
         self.d = np.sum(self.shift == 1, axis = 0)
         self.e = np.sum(self.shift == 2, axis = 0)
         self.n = np.sum(self.shift == 3, axis = 0)
 
-        enum += np.sum((self.d_max < self.d) | (self.d_min > self.d))
-        enum += np.sum((self.e_max < self.e) | (self.e_min > self.e))
-        enum += np.sum((self.n_max < self.n) | (self.n_min > self.n))
+        enum += np.sum((self.d_max < self.d[6:]) | (self.d_min > self.d[6:]))
+        enum += np.sum((self.e_max < self.e[6:]) | (self.e_min > self.e[6:]))
+        enum += np.sum((self.n_max < self.n[6:]) | (self.n_min > self.n[6:]))
 
         return enum
 
@@ -315,25 +344,26 @@ creator.create("Individual", list, fitness = creator.FitnessShift)
 def Shift_init(pop):
     global max_num_f
     global min_num_f
+    pop = np.hstack((prov_shift,pop))
     day = []
     for n,r in enumerate(request):
         if(len(r) != 0):
             for i in r:
-                pop[n][i] = 5
+                pop[n][i + 6] = 5
     for n,o in enumerate(other):
         if(len(other) != 0):
             for j in o:
-                pop[n][j] = 4
-    d = np.sum(pop == 1, axis = 0)
-    e = np.sum(pop == 2, axis = 0)
-    n = np.sum(pop == 3, axis = 0)
-    f = np.sum(pop == 0, axis = 0)
-    f += np.sum(pop == 5, axis = 0)
-    o = np.sum(pop == 4, axis = 0)
+                pop[n][j + 6] = 4
+    d = np.sum(pop[:,6:] == 1, axis = 0)
+    e = np.sum(pop[:,6:] == 2, axis = 0)
+    n = np.sum(pop[:,6:] == 3, axis = 0)
+    f = np.sum(pop[:,6:] == 0, axis = 0)
+    f += np.sum(pop[:,6:] == 5, axis = 0)
+    o = np.sum(pop[:,6:] == 4, axis = 0)
     max_num_f -= o
     min_num_f -= o 
-    for i in range(30):
-        day = pop[:,i]
+    for i in range(0,30):
+        day = pop[:,i + 6]
         while(1):
             miss = 0
             if(d[i] > max_num_d[i]):
@@ -419,7 +449,7 @@ def Shift_init(pop):
             if(miss == 0):
                 break
         
-        pop[:,i] = day[:]
+        pop[:,i + 6] = day[:]
 
     return pop
 
@@ -440,11 +470,11 @@ def ShiftPattern(pop):
     penalty = 0
     for i,ind in enumerate(pop):
         
-        d = np.sum(ind == 1)
-        e = np.sum(ind == 2)
-        n = np.sum(ind == 3)
-        f = np.sum(ind == 0)
-        f += np.sum(ind == 5)
+        d = np.sum(ind[6:] == 1)
+        e = np.sum(ind[6:] == 2)
+        n = np.sum(ind[6:] == 3)
+        f = np.sum(ind[6:] == 0)
+        f += np.sum(ind[6:] == 5)
 
         if(i in d_e_n_pattern1):
             if(d > 15):
@@ -480,13 +510,6 @@ def ShiftPattern(pop):
         if(f < 9):
             penalty += 1
 
-        if(ind[0] == 3):
-            if(ind[1] != 3):
-                penalty += 1
-        if(ind[29] == 3):
-            if(ind[28] != 3):
-                penalty += 1
-
         map_l = map(str,ind)
         pattern = ''.join(map_l)
         for x in b_shift:
@@ -496,12 +519,12 @@ def ShiftPattern(pop):
     return penalty
 
 def cxTwoPoint(pop):
-    size = 29
-    excluded = []
+    size = 35
     t_list = []
+    excluded = []
     point_set = []
     ind_list = []
-    for i in range(200):
+    for i in range(250):
         copy1 = copy.deepcopy(pop)
         copy2 = copy.deepcopy(pop)
         while(1):
@@ -509,8 +532,8 @@ def cxTwoPoint(pop):
             ind2 = random.randint(0,23)
             if(ind1 == ind2):
                 ind2 += 1
-            cxpoint1 = random.randint(0, size)
-            cxpoint2 = random.randint(0, size - 1)
+            cxpoint1 = random.randint(6, size)
+            cxpoint2 = random.randint(6, size - 1)
             if(cxpoint2 >= cxpoint1):
                 cxpoint2 += 1
             else: # Swap the two cx points
@@ -532,13 +555,16 @@ def cxTwoPoint(pop):
                 t_list.append(copy.deepcopy(point_set))
                 point_set.clear()
                 break
-       
+
         excluded.extend(request[ind1])
         excluded.extend(request[ind2])
         excluded.extend(other[ind1])
         excluded.extend(other[ind2])
 
-        for s in range(30):
+        for e in range(len(excluded)):
+            excluded[e] = excluded[e] + 6
+
+        for s in range(6,36):
             if(s  not in excluded):
                 if(s < cxpoint1):
                     copy2[ind1][s],copy2[ind2][s] = copy2[ind2][s],copy2[ind1][s]
@@ -584,7 +610,7 @@ def mut(individual):
 
     origine = ind
 
-    j = random.randint(0,29)
+    j = random.randint(6,35)
     
 
     while(1):
@@ -606,11 +632,11 @@ def mut(individual):
         while(1):
             count += 1
             r = random.randint(0,1)
-            if(r == 0 and f > min_num_f[j] and f <= max_num_f[j] and (d + 1) <= max_num_d[j]):
+            if(r == 0 and f > min_num_f[j - 6] and f <= max_num_f[j - 6] and (d + 1) <= max_num_d[j - 6]):
                 z = f_list[0][np.random.randint(0,len(f_list[0]))]
                 ind[z][j] = 1
                 break
-            elif(r == 1 and d > min_num_d[j] and d <= max_num_d[j] and (f + 1) <= max_num_f[j]):
+            elif(r == 1 and d > min_num_d[j - 6] and d <= max_num_d[j - 6] and (f + 1) <= max_num_f[j - 6]):
                 z = d_list[0][np.random.randint(0,len(d_list[0]))]
                 ind[z][j] = 0
                 break
@@ -639,11 +665,11 @@ def evalshift(pop):
     return penalty,
 
 def result(pop):
-    d = np.sum(pop == 1, axis = 0)
-    e = np.sum(pop == 2, axis = 0)
-    n = np.sum(pop == 3, axis = 0)
-    f = np.sum(pop == 0, axis = 0)
-    f += np.sum(pop == 5, axis = 0)
+    d = np.sum(pop[:,6:] == 1, axis = 0)
+    e = np.sum(pop[:,6:] == 2, axis = 0)
+    n = np.sum(pop[:,6:] == 3, axis = 0)
+    f = np.sum(pop[:,6:] == 0, axis = 0)
+    f += np.sum(pop[:,6:] == 5, axis = 0)
     for num,ind in enumerate(pop):
         print("%2d:" % num ,end = "")
         print(ind)
@@ -777,6 +803,7 @@ def main():
         #fitnesses = Parallel(n_jobs=-1)( [delayed(cal_p)(ind) for ind in ind_list])
         with Pool(processes = 7) as p:
             fitnesses = p.map(cal_p,ind_list) 
+        #fitnesses = list(map(cal_p,ind_list)) 
 
         i = fitnesses.index(min(fitnesses))
 
@@ -785,7 +812,7 @@ def main():
         if(g % m == 0):
             best_ind = toolbox.mutate(best_ind)
             c += 1
-            if(c == 50):
+            if(c == 100):
                 m += 20
                 c = 0
 
@@ -809,7 +836,12 @@ def main():
         print("fits1 = %f" % fits1)
         print("enum2 = %f" % num2)
         print("enum3 = %f" % num3)
-        elapsed_time = (time.time() - start) / 3600 
+        elapsed_time = (time.time() - start) / 3600
+        if(g == 0):
+            calc_time = elapsed_time
+        remaining_time = calc_time * (NGEN - g)
+        print("elapsed_time  :{0}".format(elapsed_time) + "[h]")
+        print("remaining_time:{0}".format(remaining_time) + "[h]") 
         ind_list.clear()
 
         if(fits1 == 0):
@@ -830,7 +862,7 @@ def main():
     elapsed_time = (time.time() - start) / 3600 
     print("elapsed_time:{0}".format(elapsed_time) + "[h]")
 
-    s = "/home/imada/Desktop/Research/output/csv/"
+    s = "/home/imada/Desktop/Research/output/csv"
     fname = s + datetime.now().strftime("%Y%m%d_%H%M%S") 
     f = open(fname + '.csv',mode = 'w')
     writer_d = csv.writer(f,lineterminator = '\n')
