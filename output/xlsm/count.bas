@@ -33,7 +33,7 @@ Sub Count_A()
     Workbooks("penalty.xlsm").Sheets("sheet1").Cells(r_num + 10,1).Value = "N_Prov"
 
 
-    For r = 2 To 31
+    For r = 8 To 37
         d = 0
         e = 0
         n = 0
@@ -88,7 +88,7 @@ Sub Count_A_SS()
     Workbooks("penalty.xlsm").Sheets("sheet1").Cells(r_num +  9,1).Value = "N_Min"
     Workbooks("penalty.xlsm").Sheets("sheet1").Cells(r_num + 10,1).Value = "N_Prov"
 
-    For r = 2 To 31
+    For r = 8 To 37
         d = 0
         e = 0
         n = 0
@@ -143,7 +143,7 @@ Sub Count_B()
     Workbooks("penalty.xlsm").Sheets("sheet1").Cells(r_num +  9,1).Value = "N_Min"
     Workbooks("penalty.xlsm").Sheets("sheet1").Cells(r_num + 10,1).Value = "N_Prov"
 
-    For r = 2 To 31
+    For r = 8 To 37
         d = 0
         e = 0
         n = 0
@@ -198,7 +198,7 @@ Sub Count_B_SS()
     Workbooks("penalty.xlsm").Sheets("sheet1").Cells(r_num +  9,1).Value = "N_Min"
     Workbooks("penalty.xlsm").Sheets("sheet1").Cells(r_num + 10,1).Value = "N_Prov"
 
-   For r = 2 To 31
+   For r = 8 To 37
         d = 0
         e = 0
         n = 0
@@ -253,7 +253,7 @@ Sub Count_B_SS_s()
     Workbooks("penalty.xlsm").Sheets("sheet1").Cells(r_num +  9,1).Value = "N_Min"
     Workbooks("penalty.xlsm").Sheets("sheet1").Cells(r_num + 10,1).Value = "N_Prov"
 
-    For r = 2 To 31
+    For r = 8 To 37
         d = 0
         e = 0
         n = 0
@@ -320,7 +320,7 @@ Sub Count_B_rq_s()
     Workbooks("penalty.xlsm").Sheets("sheet1").Cells(r_num +  9,1).Value = "N_Min"
     Workbooks("penalty.xlsm").Sheets("sheet1").Cells(r_num + 10,1).Value = "N_Prov"
 
-    For r = 2 To 31
+    For r = 8 To 37
         d = 0
         e = 0
         n = 0
@@ -368,7 +368,7 @@ Sub Count_o_n()
     Workbooks("penalty.xlsm").Sheets("sheet1").Cells(r_num +  9,1).Value = "N_Min"
     Workbooks("penalty.xlsm").Sheets("sheet1").Cells(r_num + 10,1).Value = "N_Prov"
 
-    For r = 2 To 31
+    For r = 8 To 37
         d = 0
         e = 0
         n = 0
@@ -470,7 +470,7 @@ Sub Count_Staff()
     Workbooks("penalty.xlsm").Sheets("sheet1").Cells(r_num + 10,1).Value = "N_Prov"
 
 
-    For r = 2 To 31
+    For r = 8 To 37
         d = 0
         e = 0
         n = 0
@@ -508,10 +508,10 @@ sub Shift_Count()
     e = 0
     f = 0
 
-    Cells(1,33).Value = "d"
-    Cells(1,34).Value = "e"
-    Cells(1,35).Value = "n"
-    Cells(1,36).Value = "f"
+    Cells(1,39).Value = "d"
+    Cells(1,40).Value = "e"
+    Cells(1,41).Value = "n"
+    Cells(1,42).Value = "f"
 
     For i = 2 To 26
         For j = 2 To 31
@@ -527,10 +527,10 @@ sub Shift_Count()
             End If
         Next
 
-        Cells(i,33).Value = d
-        Cells(i,34).Value = e
-        Cells(i,35).Value = n
-        Cells(i,36).Value = f
+        Cells(i,39).Value = d
+        Cells(i,40).Value = e
+        Cells(i,41).Value = n
+        Cells(i,42).Value = f
         d = 0
         n = 0
         e = 0
