@@ -15,12 +15,12 @@ Sub Check_Shift()
 
     p = 0
 
-    For r = 33 To 36
+    For r = 39 To 42
         For num = 2 To 26
             i = Application.Match(num,g1,0)
             j = Application.Match(num,g2,0)
             If Not IsError(i) Then
-                If r = 33 Then
+                If r = 39 Then
                     If Sheets("Sheet1").Cells(num,r) > 15 Then 
                         Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
                         p = p + 1
@@ -29,7 +29,7 @@ Sub Check_Shift()
                     End If
                 End If
 
-                If r = 34 Then
+                If r = 40 Then
                     If Sheets("Sheet1").Cells(num,r) > 6 Then 
                         Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
                         p = p + 1
@@ -41,7 +41,7 @@ Sub Check_Shift()
                     End If
                 End If
 
-                If r = 35 Then
+                If r = 41 Then
                     If Sheets("Sheet1").Cells(num,r) > 4 Then 
                         Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
                         p = p + 1
@@ -53,7 +53,7 @@ Sub Check_Shift()
                     End If
                 End If
             ElseIf Not IsError(j) Then
-                If r = 33 Then
+                If r = 39 Then
                     If Sheets("Sheet1").Cells(num,r) > 14 Then 
                         Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
                         p = p + 1
@@ -62,7 +62,7 @@ Sub Check_Shift()
                     End If
                 End If
 
-                If r = 34 Then
+                If r = 40 Then
                     If Sheets("Sheet1").Cells(num,r) > 6 Then 
                         Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
                         p = p + 1
@@ -74,7 +74,7 @@ Sub Check_Shift()
                     End If
                 End If
 
-                If r = 35 Then
+                If r = 41 Then
                     If Sheets("Sheet1").Cells(num,r) > 6 Then 
                         Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
                         p = p + 1
@@ -86,7 +86,7 @@ Sub Check_Shift()
                     End If
                 End If
             ElseIf num = 13 Then
-                If r = 33 Then
+                If r = 39 Then
                     If Sheets("Sheet1").Cells(num,r) > 17 Then 
                         Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
                         p = p + 1
@@ -95,7 +95,7 @@ Sub Check_Shift()
                     End If
                 End If
 
-                If r = 34 Then
+                If r = 40 Then
                     If Sheets("Sheet1").Cells(num,r) <> 2 Then 
                         Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
                         p = p + 1
@@ -104,7 +104,7 @@ Sub Check_Shift()
                     End If
                 End If
 
-                If r = 35 Then
+                If r = 41 Then
                     If Sheets("Sheet1").Cells(num,r) <> 2 Then 
                         Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
                         p = p + 1
@@ -113,7 +113,7 @@ Sub Check_Shift()
                     End If
                 End If
             ElseIf num = 20 Then
-                If r = 33 Then
+                If r = 39 Then
                     If Sheets("Sheet1").Cells(num,r) > 17 Then 
                         Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
                         p = p + 1
@@ -122,7 +122,7 @@ Sub Check_Shift()
                     End If
                 End If
 
-                If r = 34 Then
+                If r = 40 Then
                     If Sheets("Sheet1").Cells(num,r) > 4 Then 
                         Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
                         p = p + 1
@@ -134,7 +134,7 @@ Sub Check_Shift()
                     End If
                 End If
 
-                If r = 35 Then
+                If r = 41 Then
                     If Sheets("Sheet1").Cells(num,r) <> 4 Then 
                         Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
                         p = p + 1
@@ -146,7 +146,7 @@ Sub Check_Shift()
             
             End If
 
-            If r = 36 Then
+            If r = 42 Then
                 If Sheets("Sheet1").Cells(num,r) < 9 Then 
                     Sheets("Sheet1").Cells(num,r).Interior.Color = RGB(250,0,0)
                     p = p + 1
@@ -169,7 +169,7 @@ Sub Check_A()
     p = 0
     s = 1
 
-    For r = 2 To 31
+    For r = 8 To 37
         If Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 3,r) > Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 1,r) Then 
             Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 3,r).Interior.Color = RGB(250,0,0)
             p = p + 1
@@ -213,7 +213,7 @@ Sub Check_A_SS()
     p = 0
     s = 13
 
-     For r = 2 To 31
+     For r = 8 To 37
         If Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 3,r) > Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 1,r) Then 
             Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 3,r).Interior.Color = RGB(250,0,0)
             p = p + 1
@@ -258,7 +258,7 @@ Sub Check_B()
     p = 0
     s = 25
 
-     For r = 2 To 31
+     For r = 8 To 37
         If Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 3,r) > Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 1,r) Then 
             Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 3,r).Interior.Color = RGB(250,0,0)
             p = p + 1
@@ -303,7 +303,7 @@ Sub Check_B_SS()
     p = 0
     s = 37
 
-     For r = 2 To 31
+     For r = 8 To 37
         If Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 3,r) > Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 1,r) Then 
             Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 3,r).Interior.Color = RGB(250,0,0)
             p = p + 1
@@ -348,7 +348,7 @@ Sub Check_B_SS_s()
     p = 0
     s = 49
 
-     For r = 2 To 31
+     For r = 8 To 37
         If Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 3,r) > Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 1,r) Then 
             Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 3,r).Interior.Color = RGB(250,0,0)
             p = p + 1
@@ -393,7 +393,7 @@ Sub Check_B_rq_s()
     p = 0
     s = 61
 
-     For r = 2 To 31
+     For r = 8 To 37
         If Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 3,r) > Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 1,r) Then 
             Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 3,r).Interior.Color = RGB(250,0,0)
             p = p + 1
@@ -438,7 +438,7 @@ Sub Check_o_n()
     p = 0
     s = 73
 
-     For r = 2 To 31
+     For r = 8 To 37
         If Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 3,r) > Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 1,r) Then 
             Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 3,r).Interior.Color = RGB(250,0,0)
             p = p + 1
@@ -483,7 +483,7 @@ Sub Check_Staff()
     p = 0
     s = 85
 
-    For r = 2 To 31
+    For r = 8 To 37
         If Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 3,r) > Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 1,r) Then 
             Workbooks("penalty.xlsm").Sheets("sheet1").Cells(s + 3,r).Interior.Color = RGB(250,0,0)
             p = p + 1
@@ -575,7 +575,7 @@ Sub Check_Hard()
     p16 = 0
     
     For i = 2 To 26
-        For j = 2 To 31
+        For j = 2 To 37
             Cells(i,j).Interior.Color = Cells(i,1).Interior.Color
             If Cells(i,j).Value = 0 or Cells(i,j).Value = 5 Then
                 p2 = 0
@@ -907,16 +907,6 @@ Sub Check_Hard()
         p14 = 0
         p15 = 0
         p16 = 0
-        If Cells(i,2).Value = 3 and Cells(i,3).Value <> 3  Then
-            Cells(i,2).Interior.Color = RGB(156,167,22)
-            Cells(i,3).Interior.Color = RGB(156,167,22)
-            count = count + 1
-        End If
-        If Cells(i,31).Value = 3 and Cells(i,30).Value <> 3  Then
-            Cells(i,31).Interior.Color = RGB(156,167,22)
-            Cells(i,30).Interior.Color = RGB(156,167,22)
-            count = count + 1
-        End If
     Next
 
     Sheets("Sheet1").Cells(29,1).Value =  Sheets("Sheet1").Cells(29,1).Value + count
