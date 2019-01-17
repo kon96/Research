@@ -510,7 +510,7 @@ def ShiftPattern(pop):
         if(f < 9):
             penalty += 1
 
-        map_l = map(str,ind)
+        map_l = map(str,ind[5:])
         pattern = ''.join(map_l)
         for x in b_shift:
             y = re.findall(x,pattern)
@@ -591,12 +591,14 @@ def cxTwoPoint(pop):
     return ind_list
 
 origine = []
+mut_list = []
 
 def my_index_multi(l, x):
     return [i for i, _x in enumerate(l) if _x == x]
 
 def mut(individual):
     global origine
+    global mut_list
 
     x = cal_p(individual)
     y = cal_p(origine)
@@ -610,7 +612,14 @@ def mut(individual):
 
     origine = ind
 
-    j = random.randint(6,35)
+    while(1):
+        j = random.randint(6,35)
+        if(j not in mut_list):
+            break
+    
+    mut_list.append(j)
+    if(len(mut_list) > 10):
+        del mut_list[0]
     
 
     while(1):
@@ -862,7 +871,7 @@ def main():
     elapsed_time = (time.time() - start) / 3600 
     print("elapsed_time:{0}".format(elapsed_time) + "[h]")
 
-    s = "/home/imada/Desktop/Research/output/csv"
+    s = "/home/imada/Desktop/Research/output/csv/"
     fname = s + datetime.now().strftime("%Y%m%d_%H%M%S") 
     f = open(fname + '.csv',mode = 'w')
     writer_d = csv.writer(f,lineterminator = '\n')
