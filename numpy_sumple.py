@@ -510,7 +510,7 @@ def ShiftPattern(pop):
         if(f < 9):
             penalty += 1
 
-        map_l = map(str,ind[5:])
+        map_l = map(str,ind)
         pattern = ''.join(map_l)
         for x in b_shift:
             y = re.findall(x,pattern)
@@ -524,7 +524,7 @@ def cxTwoPoint(pop):
     excluded = []
     point_set = []
     ind_list = []
-    for i in range(250):
+    for i in range(300):
         copy1 = copy.deepcopy(pop)
         copy2 = copy.deepcopy(pop)
         while(1):
@@ -658,7 +658,7 @@ def cal_p(pop):
     num2 = employee_num(pop) 
     num3 = ShiftPattern(pop)
     
-    penalty = num2 + (num3 * 100)
+    penalty = num2 + ((num3 - 5) * 100)
 
     return penalty
 
@@ -708,7 +708,7 @@ def result(pop):
     g7 = o_n.error(pop)
     g8 = all_shift.error(pop)
 
-    p3 = ShiftPattern(pop)
+    p3 = ShiftPattern(pop) - 5
 
     """for i,ind in enumerate(pop):
         d = ind.shift.count(1)
@@ -818,12 +818,12 @@ def main():
 
         best_ind = ind_list[i]
         
-        if(g % m == 0):
+        """if(g % m == 0):
             best_ind = toolbox.mutate(best_ind)
             c += 1
-            if(c == 100):
+            if(c == 120):
                 m += 20
-                c = 0
+                c = 0"""
 
         pop[:] = best_ind
 
