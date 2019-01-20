@@ -62,8 +62,8 @@ max_num_e = np.array([4 for i in range(30)])
 min_num_e = np.array([4 for i in range(30)])
 max_num_n = np.array([3 for i in range(30)])
 min_num_n = np.array([3 for i in range(30)])
-max_num_f = np.array([(25 - (min_num_d[i] + 7)) for i in range(30)])
-min_num_f = np.array([(25 - (max_num_d[i] + 7)) for i in range(30)])
+max_num_f_org = np.array([(25 - (min_num_d[i] + 7)) for i in range(30)])
+min_num_f_org = np.array([(25 - (max_num_d[i] + 7)) for i in range(30)])
 
 #1-9 = 1,9
 g_1_9 = np.array([0,8])
@@ -346,8 +346,6 @@ creator.create("FitnessShift", base.Fitness, weights=(-1.0,))
 creator.create("Individual", list, fitness = creator.FitnessShift)
 
 def Shift_init(pop):
-    global max_num_f
-    global min_num_f
     pop = np.hstack((prov_shift,pop))
     day = []
     for n,r in enumerate(request):
@@ -364,8 +362,8 @@ def Shift_init(pop):
     f = np.sum(pop[:,6:] == 0, axis = 0)
     f += np.sum(pop[:,6:] == 5, axis = 0)
     o = np.sum(pop[:,6:] == 4, axis = 0)
-    max_num_f -= o
-    min_num_f -= o 
+    max_num_f = max_num_f_org - o
+    min_num_f = min_num_f_org - o 
     for i in range(0,30):
         day = pop[:,i + 6]
         while(1):
@@ -645,11 +643,11 @@ def mut(individual):
         while(1):
             count += 1
             r = random.randint(0,1)
-            if(r == 0 and f > min_num_f[j - 6] and f <= max_num_f[j - 6] and (d + 1) <= max_num_d[j - 6]):
+            if(r == 0 and f > min_num_f_org[j - 6] and f <= max_num_f_org[j - 6] and (d + 1) <= max_num_d[j - 6]):
                 z = f_list[0][np.random.randint(0,len(f_list[0]))]
                 ind[z][j] = 1
                 break
-            elif(r == 1 and d > min_num_d[j - 6] and d <= max_num_d[j - 6] and (f + 1) <= max_num_f[j - 6]):
+            elif(r == 1 and d > min_num_d[j - 6] and d <= max_num_d[j - 6] and (f + 1) <= max_num_f_org[j - 6]):
                 z = d_list[0][np.random.randint(0,len(d_list[0]))]
                 ind[z][j] = 0
                 break
@@ -809,13 +807,13 @@ def main():
     global sum1
     global sum2
     start = time.time()
-    pop = create_pop()
-    NGEN = 100
+    
+    NGEN = 10
     m = 1000
     c = 0
     for z in range(5):
         print("Start of evolution")
-            
+        pop = create_pop()
         pop = Shift_init(pop)
 
         fits1 = cal_p(pop)
@@ -916,9 +914,14 @@ def main():
         all_shift.save(write)""" 
         sum1 += error_num(best_pop)
         sum2 += ShiftPattern(pop) - 5
+        print(z)
 
     print("ave:",end ="")
-    print((sum1 + sum2) / 5)
+    print(sum1 / 5)
+    print("ave:",end ="")
+    print(sum2 / 5)
+    print("ave:",end ="")
+    print((sum1 + (sum2 * 100)) / 5)
 
 
 if __name__ == '__main__':
