@@ -22,6 +22,10 @@ import numpy as np
 d_e_n_pattern1 = np.array([0,6,7,8,9,10,12,19,20,21,22,23])
 d_e_n_pattern2 = np.array([1,2,3,4,5,13,14,15,16,17,24])
 
+sum1 = 0
+sum2 = 0
+ave = 0
+
 prov_shift = np.array([
     [1,2,0,0,1,1],
     [1,1,0,1,1,3],
@@ -656,9 +660,9 @@ def mut(individual):
 
 def cal_p(pop): 
     num2 = employee_num(pop) 
-    num3 = ShiftPattern(pop)
+    num3 = ShiftPattern(pop) - 5
     
-    penalty = num2 + ((num3 - 5) * 100)
+    penalty = num2 + (num3 * 100)
 
     return penalty
 
@@ -771,6 +775,22 @@ def simulated_annealing(pop):
 
     return prob.best_state
 
+def error_num(pop):
+
+    g1 = A.error(pop)
+    g2 = A_SS.error(pop)
+    g3 = B.error(pop)
+    g4 = B_SS.error(pop)
+    g5 = B_SS_s.error(pop)
+    g6 = B_rq_s.error(pop)
+    g7 = o_n.error(pop)
+    g8 = all_shift.error(pop)
+
+    num = g1 + g2 + g3 + g4 + g5 + g6 + g7 + g8
+
+    return num
+
+
 toolbox = base.Toolbox()
 toolbox.register("map", futures.map)
 #0:休暇 1:日勤 2:準夜勤 3:夜勤 4:その他
@@ -786,111 +806,120 @@ toolbox.register("mutate", mut)
 
 def main():
     global origine
+    global sum1
+    global sum2
     start = time.time()
     pop = create_pop()
-    NGEN = 50000
-    m = 10
+    NGEN = 100
+    m = 1000
     c = 0
-
-    print("Start of evolution")
-        
-    pop = Shift_init(pop)
-
-    fits1 = cal_p(pop)
-    origine = pop
-    fits2 = fits1
-    best_fits = fits1
-    best_pop = copy.deepcopy(pop)
-    result(pop)
-
-    for g in range(NGEN):
-       
-        print("-- Generation %i --" % g)
-        offspring = pop
-        ind_list = toolbox.mate(offspring)
-
-        #fitnesses = Parallel(n_jobs=-1)( [delayed(cal_p)(ind) for ind in ind_list])
-        with Pool(processes = 7) as p:
-            fitnesses = p.map(cal_p,ind_list) 
-        #fitnesses = list(map(cal_p,ind_list)) 
-
-        i = fitnesses.index(min(fitnesses))
-
-        best_ind = ind_list[i]
-        
-        """if(g % m == 0):
-            best_ind = toolbox.mutate(best_ind)
-            c += 1
-            if(c == 120):
-                m += 20
-                c = 0"""
-
-        pop[:] = best_ind
+    for z in range(5):
+        print("Start of evolution")
+            
+        pop = Shift_init(pop)
 
         fits1 = cal_p(pop)
-
-        if(fits1 == fits2):
-            count += 1
-        else:
-            count = 0
-        
+        origine = pop
         fits2 = fits1
+        best_fits = fits1
+        best_pop = copy.deepcopy(pop)
+        result(pop)
+    
+        for g in range(NGEN):
+        
+            print("-- Generation %i --" % g)
+            offspring = pop
+            ind_list = toolbox.mate(offspring)
 
-        """if(count == 50):
-            pop = simulated_annealing(pop)
+            #fitnesses = Parallel(n_jobs=-1)( [delayed(cal_p)(ind) for ind in ind_list])
+            with Pool(processes = 7) as p:
+                fitnesses = p.map(cal_p,ind_list) 
+            #fitnesses = list(map(cal_p,ind_list)) 
+
+            i = fitnesses.index(min(fitnesses))
+
+            best_ind = ind_list[i]
+            
+            if(g % m == 0):
+                best_ind = toolbox.mutate(best_ind)
+                c += 1
+                if(c == 120):
+                    m += 20
+                    c = 0
+
+            pop[:] = best_ind
+
             fits1 = cal_p(pop)
-            count = 0"""
 
-        num2,num3 = cal_enum(pop)
-        print("fits1 = %f" % fits1)
-        print("enum2 = %f" % num2)
-        print("enum3 = %f" % num3)
-        elapsed_time = (time.time() - start) / 3600
-        if(g == 0):
-            calc_time = elapsed_time
-        remaining_time = calc_time * (NGEN - g)
-        print("elapsed_time  :{0}".format(elapsed_time) + "[h]")
-        print("remaining_time:{0}".format(remaining_time) + "[h]") 
-        ind_list.clear()
+            if(fits1 == fits2):
+                count += 1
+            else:
+                count = 0
+            
+            fits2 = fits1
 
-        if(fits1 == 0):
-            break
+            """if(count == 50):
+                pop = simulated_annealing(pop)
+                fits1 = cal_p(pop)
+                count = 0"""
 
-        if(best_fits > fits1):
-            best_fits = fits1
-            best_pop = copy.deepcopy(pop)
-            origine = copy.deepcopy(best_pop)
-            best_generation = g
+            num2,num3 = cal_enum(pop)
+            print("fits1 = %f" % fits1)
+            print("enum2 = %f" % num2)
+            print("enum3 = %f" % num3)
+            elapsed_time = (time.time() - start) / 3600
+            if(g == 0):
+                calc_time = elapsed_time
+            remaining_time = calc_time * (NGEN - g)
+            print("elapsed_time  :{0}".format(elapsed_time) + "[h]")
+            print("remaining_time:{0}".format(remaining_time) + "[h]") 
+            ind_list.clear()
 
-    #best_pop = simulated_annealing(pop)
-    fits1 = cal_p(pop)
-    print("-- End of (successful) evolution --")
-    print("Best individual is ")
-    print("Generation %d" % best_generation)
-    result(best_pop)
-    elapsed_time = (time.time() - start) / 3600 
-    print("elapsed_time:{0}".format(elapsed_time) + "[h]")
+            if(fits1 == 0):
+                break
 
-    s = "/home/imada/Desktop/Research/output/csv/"
-    fname = s + datetime.now().strftime("%Y%m%d_%H%M%S") 
-    f = open(fname + '.csv',mode = 'w')
-    writer_d = csv.writer(f,lineterminator = '\n')
-    for i,data in enumerate(best_pop):
-        x = np.insert(data,0,i + 1)
-        writer_d.writerow(x)
-    f.close()
+            if(best_fits > fits1):
+                best_fits = fits1
+                best_pop = copy.deepcopy(pop)
+                origine = copy.deepcopy(best_pop)
+                best_generation = g
 
-    """f1name = s + "error_list.csv"
-    f1 = open(f1name,"w")
-    write = csv.writer(f1,lineterminator = '\n')
-    A.save(write)
-    A_SS.save(write)
-    B.save(write)
-    B_SS.save(write)
-    B_SS_s.save(write)
-    B_rq_s.save(write)
-    o_n.save(write)
-    all_shift.save(write)"""
+        #best_pop = simulated_annealing(pop)
+        fits1 = cal_p(pop)
+        print("-- End of (successful) evolution --")
+        print("Best individual is ")
+        print("Generation %d" % best_generation)
+        result(best_pop)
+        elapsed_time = (time.time() - start) / 3600 
+        print("elapsed_time:{0}".format(elapsed_time) + "[h]")
+
+        s = "/home/imada/Desktop/Research/output/csv/"
+        fname = s + datetime.now().strftime("%Y%m%d_%H%M%S") 
+        print(datetime.now().strftime("%Y%m%d_%H%M%S"))
+        f = open(fname + '.csv',mode = 'w')
+        writer_d = csv.writer(f,lineterminator = '\n')
+        for i,data in enumerate(best_pop):
+            x = np.insert(data,0,i + 1)
+            writer_d.writerow(x)
+        f.close()
+
+        """f1name = s + "error_list.csv"
+        f1 = open(f1name,"w")
+        write = csv.writer(f1,lineterminator = '\n')
+        A.save(write)
+        A_SS.save(write)
+        B.save(write)
+        B_SS.save(write)
+        B_SS_s.save(write)
+        B_rq_s.save(write)
+        o_n.save(write)
+        all_shift.save(write)""" 
+        sum1 += error_num(best_pop)
+        sum2 += ShiftPattern(pop) - 5
+
+    print("ave:",end ="")
+    print((sum1 + sum2) / 5)
+
 
 if __name__ == '__main__':
     main()
