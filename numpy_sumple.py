@@ -666,7 +666,7 @@ def cal_p(pop):
 
 def cal_enum(pop):
     num2 = employee_num(pop) 
-    num3 = ShiftPattern(pop)
+    num3 = ShiftPattern(pop) - 5
 
     return num2,num3
 
@@ -916,11 +916,11 @@ def main():
         sum2 += (ShiftPattern(pop) - 5)
         print(z)
 
-    print("ave:",end ="")
+    print("ave1:",end ="")
     print(sum1 / 5)
-    print("ave:",end ="")
+    print("ave2:",end ="")
     print(sum2 / 5)
-    print("ave:",end ="")
+    print("ave3:",end ="")
     print((sum1 + (sum2 * 100)) / 5)
 
 
