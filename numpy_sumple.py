@@ -808,8 +808,8 @@ def main():
     global sum2
     start = time.time()
     
-    NGEN = 10
-    m = 1000
+    NGEN = 30000
+    m = 20
     c = 0
     for z in range(5):
         print("Start of evolution")
