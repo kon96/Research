@@ -808,7 +808,7 @@ def main():
     global sum2
     start = time.time()
     
-    NGEN = 0000
+    NGEN = 50000
     m = 20
     c = 0
     for z in range(5):
@@ -866,9 +866,9 @@ def main():
             print("enum2 = %f" % num2)
             print("enum3 = %f" % num3)
             elapsed_time = (time.time() - start) / 3600
-            if(g == 0):
+            if(g == 0 and z == 0):
                 calc_time = elapsed_time
-            remaining_time = calc_time * (NGEN - g)
+            remaining_time = calc_time * ((NGEN - g) + (NGEN * (4 - z)))
             print("elapsed_time  :{0}".format(elapsed_time) + "[h]")
             print("remaining_time:{0}".format(remaining_time) + "[h]") 
             ind_list.clear()
