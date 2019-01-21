@@ -808,7 +808,7 @@ def main():
     global sum2
     start = time.time()
     
-    NGEN = 30000
+    NGEN = 0000
     m = 20
     c = 0
     for z in range(5):
@@ -913,7 +913,7 @@ def main():
         o_n.save(write)
         all_shift.save(write)""" 
         sum1 += error_num(best_pop)
-        sum2 += ShiftPattern(pop) - 5
+        sum2 += (ShiftPattern(pop) - 5)
         print(z)
 
     print("ave:",end ="")
