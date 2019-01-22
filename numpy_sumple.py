@@ -838,12 +838,12 @@ def main():
 
             best_ind = ind_list[i]
             
-            if(g % m == 0):
+            """if(g % m == 0):
                 best_ind = toolbox.mutate(best_ind)
                 c += 1
                 if(c == 120):
                     m += 20
-                    c = 0
+                    c = 0"""
 
             pop[:] = best_ind
 
