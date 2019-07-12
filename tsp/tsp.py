@@ -22,49 +22,79 @@ class Individual(object):
     def __init__(self,size):
         self.root = np.arange(size)
         np.random.shuffle(self.root)
+        self.change = True
         self.cost = np.zeros(size,float)
 
-    def calc_root(self,co):
+    def calc_root(self,dist):
         for i in range(len(self.root) - 1):
-            self.cost[i] = np.linalg.norm(co[self.root[i + 1]] - co[self.root[i]] )
+            self.cost[i] = dist[self.root[i]][self.root[i + 1]]
 
-        self.cost[i + 1] = np.linalg.norm(co[self.root[0]] - co[self.root[i + 1]] )
+        self.cost[i + 1] = dist[self.root[i + 1]][self.root[0]]
 
-        self.total_cost = sum(self.cost)
+        self.total_cost = np.sum(self.cost)
+
+        self.change = False
+
+def calc_fit(pop,dist):
+    for i in pop:
+        if(i.change):
+            i.calc_root(dist)
+    
+    return pop
 
             
-def roulette_choice1(w):
-    tot = np.cumsum(np.reciprocal(w))
+def roulette_choice1(pop,w):
+    new_pop = []
+    tot = []
+    tmp = np.zeros(len(pop),float)
+    count = [0] * len(pop)
 
-    r = random.random() * max(tot)
+    for t,fit in enumerate(w):
+        tmp[t] = (max(w) - fit) / (max(w) - min(w))
+
+    elite = w.argsort()[0:5]
+    for x in elite:
+        new_pop.append(pop[x])
     
-    i = bisect.bisect_right(tot, r)
-    return i
+    tot = np.cumsum(tmp)
+
+    for j in range(len(pop) - 5):
+        r = random.random() * max(tot)
+    
+        i = bisect.bisect_right(tot, r)
+
+        count[i] += 1
+
+        new_pop.append(copy.deepcopy(pop[i]))
+
+    return new_pop
 
 
-def cross(pop,cl):
+def cross(pop,size,p_c):
     offspring = copy.deepcopy(pop)
-    p_c = 0.8
+    cross_num = int(len(pop) * p_c) + 2
     a = np.arange(len(pop))
     np.random.shuffle(a)
-    for k in range(0, int(len(pop) * p_c), 2):
+    for k in range(0, cross_num, 2):
         c1 = offspring[a[k]]
         c2 = offspring[a[k + 1]]
         while(1):
-            r1 = random.randint(0,cl - 1)
-            r2 = random.randint(0,cl - 1)
+            r1 = random.randint(0,size - 1)
+            r2 = random.randint(0,size - 1)
             if(r1 != r2):
+                if(r2 < r1):
+                    r1, r2 = r2, r1
                 break
 
         e1 = copy.deepcopy(c1.root[r1:r2])
         e2 = copy.deepcopy(c2.root[r1:r2])
-        child1 = np.arange()
-        child2 = np.arange()
+        child1 = np.arange(0)
+        child2 = np.arange(0)
 
-        for i in range(cl):
-            if( c2[i] not in e1):
+        for i in range(size):
+            if( c2.root[i] not in e1):
                 child1 = np.append(child1,c2.root[i])
-            if( c1[i] not in e2):
+            if( c1.root[i] not in e2):
                 child2 = np.append(child2,c1.root[i])
 
         child1 = np.insert(child1, r1, e1)
@@ -73,20 +103,25 @@ def cross(pop,cl):
         offspring[a[k]].root = child1
         offspring[a[k + 1]].root = child2
 
+        offspring[a[k]].change = True
+        offspring[a[k + 1]].change = True
+
     return offspring
 
 
-def mutate(ind, cl):
-    while(1):
+def mutate(pop, size, m):
+    for mutant in pop:
+        r = random.random()
+        if(r < m):
+            while(1):
+                r1 = random.randint(0,size - 1)
+                r2 = random.randint(0,size - 1)
+                if(r1 != r2):
+                    break
+                
+            mutant.root[r1],mutant.root[r2] = mutant.root[r2],mutant.root[r1]
 
-        r1 = random.randint(0,cl - 1)
-        r2 = random.randint(0,cl - 1)
-        if(r1 != r2):
-            break
-    
-    ind[r1],ind[r2] = ind[r2],ind[r1]
-
-    return ind
+    return pop
 
 def create_pop(num,size):
     pop = []
@@ -96,19 +131,26 @@ def create_pop(num,size):
     
     return pop
 
+def init_cost(co):
+    c = np.zeros((len(co),len(co)))
+    for i in range(len(co)):
+        for j in range(len(co)):
+            c[i][j] = np.linalg.norm(co[j] - co[i])
+
+    return c
+
 def main():
     start = time.time()
-    pop = create_pop()
-    NGEN = 20000
-    ind_num = 100
-    m = 10
-    c = 0
-    tsp_data = open(r"C:\Users\imada\Desktop\Research\tsp\burma14.txt","r")
-
+    m = 0.1         #突然変異率
+    p_c = 0.8       #交叉率
+    NGEN = 10000    #世代数
+    ind_num = 100   #集団の大きさ
+    
+    tsp_data = open(r"C:\Users\imada\Desktop\Research\tsp\pr1002.txt","r")
     lines = tsp_data.readlines()
     tsp_data.close()
 
-    size = len(lines)
+    size = len(lines)    #個体の大きさ
 
     co = np.empty((0,2), float)
 
@@ -118,11 +160,29 @@ def main():
         co = np.append(co,np.array([[x,y]]), axis=0)   
         print("{0} {1}".format(co[i][0],co[i][1]))
 
-    for g in range(NGEN):
-        cross(pop,size)
-
+    dist = init_cost(co)
     
+    pop = create_pop(ind_num,size)
+    calc_fit(pop,dist)
+    w = np.zeros(len(pop),float)
+
+    for g in range(NGEN):
+        print("-------第{0}世代-------".format(g))
+        for i in range(len(pop)):
+            w[i] = pop[i].total_cost
+        pop = roulette_choice1(pop,w)
+        print("Max:{0}\nMin:{1}\nave:{2}\nBest root:{3}".format(max(w),min(w),sum(w) / 100,pop[np.argmin(w)].root))
+        for i in range(len(pop)):
+            w[i] = pop[i].total_cost
+        pop = cross(pop,size,p_c)
+        pop = mutate(pop,size,m)
+        calc_fit(pop,dist)
+
+    print("第{0}世代".format(g + 1))
+    for i in range(len(pop)):
+        w[i] = pop[i].total_cost
+
+    print("Max:{0}\nMin:{1}\nBest root:{2}".format(max(w),min(w),pop[np.argmin(w)].root))
 
 if __name__ == '__main__':
     main()
-
