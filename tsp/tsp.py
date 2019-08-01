@@ -18,6 +18,10 @@ from deap import tools
 from deap import cma
 from itertools import zip_longest
 
+set_l = 0
+y1 = 0
+y2 = 0
+
 class Individual(object):
     def __init__(self,size):
         self.root = np.arange(size)
@@ -115,10 +119,10 @@ def mutate(pop, size, m):
         if(r < m):
             while(1):
                 r1 = random.randint(0,size - 1)
-                r2 = random.randint(0,size - 1)
+                r2 = levy(0,1)
                 if(r1 != r2):
                     break
-                
+                    
             mutant.root[r1],mutant.root[r2] = mutant.root[r2],mutant.root[r1]
 
     return pop
@@ -139,6 +143,30 @@ def init_cost(co):
 
     return c
 
+def levy(m,t):
+    global set_l,y1,y2
+    if(set_l == 0):
+        while(1):
+            u1 = np.random.rand()
+            u2 = np.random.rand()
+            if(u1 != 0 and u2 != 0):
+                break
+        r = np.sqrt(-2 * np.log(u1))
+        t = (np.pi * u2) / 2
+
+        y1 = r * np.cos(t)
+        y2 = r * np.sin(t)
+
+        set_l = 1
+        y = y1
+    elif(set_l == 1):
+        y = y2
+        set_l = 0
+
+    x = m + (t / np.math.square(y))
+
+    return x
+
 def main():
     start = time.time()
     m = 0.1         #突然変異率
@@ -146,7 +174,7 @@ def main():
     NGEN = 10000    #世代数
     ind_num = 100   #集団の大きさ
     
-    tsp_data = open(r"C:\Users\imada\Desktop\Research\tsp\pr1002.txt","r")
+    tsp_data = open(r"C:\Users\imada\Desktop\Research\tsp\berlin52.txt","r")
     lines = tsp_data.readlines()
     tsp_data.close()
 
