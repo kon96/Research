@@ -4,18 +4,12 @@ import re
 import time
 import copy
 import numpy as np
-import csv
 import bisect
+import matplotlib.pyplot as plt
 sys.path.append('/usr/local/lib/python3.6/dist-packages')
 
 from datetime import datetime
 from joblib import Parallel,delayed
-from simanneal import Annealer
-from scoop import futures
-from deap import base
-from deap import creator
-from deap import tools
-from deap import cma
 from itertools import zip_longest
 
 set_l = 0
@@ -113,16 +107,18 @@ def cross(pop,size,p_c):
     return offspring
 
 
-def mutate(pop, size, m):
+def mutate(pop, size, p_m,move):
     for mutant in pop:
         r = random.random()
-        if(r < m):
-            while(1):
-                r1 = random.randint(0,size - 1)
-                r2 = random.randint(0,size - 1)
-                if(r1 != r2):
-                    break
+        if(r < p_m):
+            r1 = random.randint(0,size - 1)
+            r2 = levy(0,1,move)
 
+            if(r % 2 == 0):
+                r2 = r1 + r2
+            else:
+                r2 = r1 - r2
+                    
             mutant.root[r1],mutant.root[r2] = mutant.root[r2],mutant.root[r1]
 
     return pop
@@ -143,7 +139,7 @@ def init_cost(co):
 
     return c
 
-def levy(m,t):
+def levy(m,t,move):
     global set_l,y1,y2
     while(1):
         if(set_l == 0):
@@ -165,55 +161,71 @@ def levy(m,t):
             set_l = 0
 
         x = m + (t / np.square(y))
-        if(x <= 15 and x >= 1):
+        if(x <= move and x >= 1):
             return int(x)
 
 def main():
     start = time.time()
-    m = 0.2         #突然変異率
+    p_m = 0.2       #突然変異率
     p_c = 0.8       #交叉率
     NGEN = 20000    #世代数
     ind_num = 100   #集団の大きさ
-    
-    tsp_data = open(r"C:\Users\imada\Desktop\Research\tsp\st70.txt","r")
-    lines = tsp_data.readlines()
-    tsp_data.close()
+    move = 15       #移動範囲
+    files = ["att532","berlin52","burma14","eil76","kroA100","lin105","lin318","pr76","pr439","pr1002","rat783","st70"]
 
-    size = len(lines)    #個体の大きさ
+    for tsp_f in files:
+        input_f = r"C:\Users\imada\Desktop\Research\tsp\\" + tsp_f +".txt" 
+        tsp_data = open(input_f,"r")
+        lines = tsp_data.readlines()
+        tsp_data.close()
 
-    co = np.empty((0,2), float)
+        size = len(lines)    #個体の大きさ
 
-    for i,line in enumerate(lines):
-        x = float(line.split()[1])
-        y = float(line.split()[2])
-        co = np.append(co,np.array([[x,y]]), axis=0)   
-        print("{0} {1}".format(co[i][0],co[i][1]))
+        co = np.empty((0,2), float)
+        plot_data = np.zeros(NGEN + 1,float)
+        plot_x = np.arange(NGEN + 1)
 
-    dist = init_cost(co)
-    
-    pop = create_pop(ind_num,size)
-    calc_fit(pop,dist)
-    w = np.zeros(len(pop),float)
+        for i,line in enumerate(lines):
+            x = float(line.split()[1])
+            y = float(line.split()[2])
+            co = np.append(co,np.array([[x,y]]), axis=0)   
+            print("{0} {1}".format(co[i][0],co[i][1]))
 
-    for g in range(NGEN):
-        print("-------第{0}世代-------".format(g))
-        for i in range(len(pop)):
-            w[i] = pop[i].total_cost
-        pop = roulette_choice1(pop,w)
-        print("Max:{0}\nMin:{1}\nave:{2}\nBest root:{3}".format(max(w),min(w),sum(w) / 100,pop[np.argmin(w)].root))
-        for i in range(len(pop)):
-            w[i] = pop[i].total_cost
-        pop = cross(pop,size,p_c)
-        pop = mutate(pop,size,m)
+        dist = init_cost(co)
+        
+        pop = create_pop(ind_num,size)
         calc_fit(pop,dist)
+        w = np.zeros(len(pop),float)
 
-    print("-------第{0}世代-------".format(g + 1))
-    for i in range(len(pop)):
-        w[i] = pop[i].total_cost
+        for g in range(NGEN):
+            g_start = time.time()
+            print("-------第{0}世代-------".format(g))
+            for i in range(len(pop)):
+                w[i] = pop[i].total_cost
 
-    print("Max:{0}\nMin:{1}\nBest root:{2}".format(max(w),min(w),pop[np.argmin(w)].root))
-    elapsed_time = (time.time() - start) / 3600 
-    print("elapsed_time:{0}".format(elapsed_time) + "[h]")
+            print("Max:{0}\nMin:{1}\nave:{2}\nBest root:{3}".format(max(w),min(w),sum(w) / 100,pop[np.argmin(w)].root))
+            plot_data[g] = min(w)
+
+            pop = roulette_choice1(pop,w)
+            pop = cross(pop,size,p_c)
+            pop = mutate(pop,size,p_m,move)
+            calc_fit(pop,dist)
+            g_end = time.time()
+            print("remaining time{0}".format((g_end - g_start) * (NGEN - g) / 60))
+            
+
+        print("-------第{0}世代-------".format(g + 1))
+        for i in range(len(pop)):
+            w[i] = pop[i].total_cost
+
+        print("Max:{0}\nMin:{1}\nBest root:{2}".format(max(w),min(w),pop[np.argmin(w)].root))
+        plot_data[g + 1] = min(w)
+        
+        plt.plot(plot_x,plot_data)
+        output_f = r"C:\Users\imada\Desktop\Research\tsp\output\\" + tsp_f + "_{0}_{1}_{2}_{3}_{4}.png".format(NGEN,p_c,p_m,ind_num,move)
+        plt.savefig(output_f)
+        elapsed_time = (time.time() - start) / 3600 
+        print("elapsed_time:{0}".format(elapsed_time) + "[h]")
 
 if __name__ == '__main__':
     main()
