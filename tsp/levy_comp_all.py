@@ -107,18 +107,36 @@ def cross(pop,size,p_c):
     return offspring
 
 
-def mutate(pop, size, p_m,move):
+def mutate_l(pop, size, p_m,move):
     for mutant in pop:
         r = random.random()
         if(r < p_m):
-            r1 = random.randint(0,size - 1)
-            r2 = levy(0,1,move)
+            while(1):
+                r1 = random.randint(0,size - 1)
+                walk = levy(0,1,move)
 
-            if(r % 2 == 0):
-                r2 = r1 + r2
-            else:
-                r2 = r1 - r2
+                if(r % 2 == 0):
+                    r2 = r1 + walk
+                else:
+                    r2 = r1 - walk
+                
+                if(r2 >= 0 and r2 <= size):
+                    break
                     
+            mutant.root[r1],mutant.root[r2] = mutant.root[r2],mutant.root[r1]
+
+    return pop
+
+def mutate(pop,size,p_m):
+    for mutant in pop:
+        r = random.random()
+        if(r < p_m):
+            while(1):
+                r1 = random.randint(0,size - 1)
+                r2 = random.randint(0,size - 1)
+                if(r1 != r2):
+                    break
+
             mutant.root[r1],mutant.root[r2] = mutant.root[r2],mutant.root[r1]
 
     return pop
@@ -166,14 +184,16 @@ def levy(m,t,move):
 
 def main():
     start = time.time()
-    p_m = 0.2       #突然変異率
+    p_m = 0.4       #突然変異率
     p_c = 0.8       #交叉率
     NGEN = 20000    #世代数
     ind_num = 100   #集団の大きさ
-    move = 15       #移動範囲
+    
+
     files = ["att532","berlin52","burma14","eil76","kroA100","lin105","lin318","pr76","pr439","pr1002","rat783","st70"]
 
     for tsp_f in files:
+
         input_f = r"C:\Users\imada\Desktop\Research\tsp\\" + tsp_f +".txt" 
         tsp_data = open(input_f,"r")
         lines = tsp_data.readlines()
@@ -192,40 +212,79 @@ def main():
             print("{0} {1}".format(co[i][0],co[i][1]))
 
         dist = init_cost(co)
-        
-        pop = create_pop(ind_num,size)
-        calc_fit(pop,dist)
-        w = np.zeros(len(pop),float)
-
-        for g in range(NGEN):
-            g_start = time.time()
-            print("-------第{0}世代-------".format(g))
-            for i in range(len(pop)):
-                w[i] = pop[i].total_cost
-
-            print("Max:{0}\nMin:{1}\nave:{2}\nBest root:{3}".format(max(w),min(w),sum(w) / 100,pop[np.argmin(w)].root))
-            plot_data[g] = min(w)
-
-            pop = roulette_choice1(pop,w)
-            pop = cross(pop,size,p_c)
-            pop = mutate(pop,size,p_m,move)
-            calc_fit(pop,dist)
-            g_end = time.time()
-            print("remaining time{0}".format((g_end - g_start) * (NGEN - g) / 3600))
             
+        
 
-        print("-------第{0}世代-------".format(g + 1))
-        for i in range(len(pop)):
-            w[i] = pop[i].total_cost
+        for j in range(2):
+            pop = create_pop(ind_num,size)
+            calc_fit(pop,dist)
+            w = np.zeros(len(pop),float)
+            p_m = 0.4       #突然変異率
+            move = int(size / 4)       #移動範囲
+            if(j == 0):
+                for g in range(NGEN):
+                    g_start = time.time()
+                    print("-------第{0}世代-------".format(g))
+                    for i in range(len(pop)):
+                        w[i] = pop[i].total_cost
 
-        print("Max:{0}\nMin:{1}\nBest root:{2}".format(max(w),min(w),pop[np.argmin(w)].root))
-        plot_data[g + 1] = min(w)
-        plt.title(str(min(w)))
-        plt.plot(plot_x,plot_data)
+                    print("Max:{0}\nMin:{1}\nave:{2}\nBest root:{3}".format(max(w),min(w),sum(w) / 100,pop[np.argmin(w)].root))
+                    plot_data[g] = min(w)
+
+                    pop = roulette_choice1(pop,w)
+                    pop = cross(pop,size,p_c)
+                    pop = mutate_l(pop,size,p_m,move)
+                    calc_fit(pop,dist)
+                    g_end = time.time()
+                    if(g % 1000 == 0):
+                        p_m -= 0.03
+                    print("remaining time{0}".format((g_end - g_start) * (NGEN - g) / 3600))
+                        
+
+                print("-------第{0}世代-------".format(g + 1))
+                for i in range(len(pop)):
+                    w[i] = pop[i].total_cost
+
+                print("Max:{0}\nMin:{1}\nBest root:{2}".format(max(w),min(w),pop[np.argmin(w)].root))
+                plot_data[g + 1] = min(w)
+                min_1 = str(min(w))
+                plt.plot(plot_x,plot_data)
+            elif(j == 1):
+                for g in range(NGEN):
+                    g_start = time.time()
+                    print("-------第{0}世代-------".format(g))
+                    for i in range(len(pop)):
+                        w[i] = pop[i].total_cost
+
+                    print("Max:{0}\nMin:{1}\nave:{2}\nBest root:{3}".format(max(w),min(w),sum(w) / 100,pop[np.argmin(w)].root))
+                    plot_data[g] = min(w)
+
+                    pop = roulette_choice1(pop,w)
+                    pop = cross(pop,size,p_c)
+                    pop = mutate(pop,size,p_m)
+                    calc_fit(pop,dist)
+                    g_end = time.time()
+                    print("remaining time{0}".format((g_end - g_start) * (NGEN - g) / 3600))
+                    if(g % 1000 == 0):
+                        p_m -= 0.03
+
+                print("-------第{0}世代-------".format(g + 1))
+                for i in range(len(pop)):
+                    w[i] = pop[i].total_cost
+
+                print("Max:{0}\nMin:{1}\nBest root:{2}".format(max(w),min(w),pop[np.argmin(w)].root))
+                plot_data[g + 1] = min(w)
+                min_2 = str(min(w))
+                plt.plot(plot_x,plot_data)
+            
+        title = min_1 + " | " + min_2
+        plt.title(title)
+        
         output_f = r"C:\Users\imada\Desktop\Research\tsp\output\\" + tsp_f + "_{0}_{1}_{2}_{3}_{4}.png".format(NGEN,p_c,p_m,ind_num,move)
         plt.savefig(output_f)
         elapsed_time = (time.time() - start) / 3600 
         print("elapsed_time:{0}".format(elapsed_time) + "[h]")
+
         plt.cla()
 
 if __name__ == '__main__':
