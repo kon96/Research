@@ -61,8 +61,6 @@ def roulette_choice1(pop,w):
     
         i = bisect.bisect_right(tot, r)
 
-        count[i] += 1
-
         new_pop.append(copy.deepcopy(pop[i]))
 
     return new_pop
@@ -220,7 +218,7 @@ def main():
             calc_fit(pop,dist)
             w = np.zeros(len(pop),float)
             p_m = 0.4       #突然変異率
-            move = int(size / 4)       #移動範囲
+            move = int(size * 0.7 / 2)       #移動範囲
             if(j == 0):
                 for g in range(NGEN):
                     g_start = time.time()

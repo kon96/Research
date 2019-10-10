@@ -42,6 +42,8 @@ def calc_fit(pop,dist):
 
             
 def roulette_choice1(pop,w):
+    if(max(w) == min(w)):
+        return pop
     new_pop = []
     tot = []
     tmp = np.zeros(len(pop),float)
@@ -58,10 +60,7 @@ def roulette_choice1(pop,w):
 
     for j in range(len(pop) - 5):
         r = random.random() * max(tot)
-    
         i = bisect.bisect_right(tot, r)
-
-        count[i] += 1
 
         new_pop.append(copy.deepcopy(pop[i]))
 
@@ -186,9 +185,9 @@ def main():
     start = time.time()
     p_m = 0.4       #突然変異率
     p_c = 0.8       #交叉率
-    NGEN = 10000    #世代数
+    NGEN = 50000    #世代数
     ind_num = 100   #集団の大きさ
-    move = 17       #移動範囲
+    move = 30       #移動範囲
 
     tsp_f = "st70"
 
@@ -218,6 +217,7 @@ def main():
         calc_fit(pop,dist)
         w = np.zeros(len(pop),float)
         p_m = 0.4       #突然変異率
+        p_ml = 0.2 
         if(j == 0):
             for g in range(NGEN):
                 g_start = time.time()
@@ -234,7 +234,7 @@ def main():
                 calc_fit(pop,dist)
                 g_end = time.time()
                 if(g % 1000 == 0):
-                    p_m -= 0.03
+                    p_m -= 0.01
                     #move -= 1
                 print("remaining time{0}".format((g_end - g_start) * (NGEN - g) / 3600))
                     
@@ -259,12 +259,15 @@ def main():
 
                 pop = roulette_choice1(pop,w)
                 pop = cross(pop,size,p_c)
-                pop = mutate(pop,size,p_m)
+                if(g <= 40000):
+                    pop = mutate(pop,size,p_m)
+                elif(g > 40000):
+                    pop = mutate_l(pop,size,p_ml,move)
                 calc_fit(pop,dist)
                 g_end = time.time()
                 print("remaining time{0}".format((g_end - g_start) * (NGEN - g) / 3600))
                 if(g % 1000 == 0):
-                    p_m -= 0.03
+                    p_m -= 0.01
 
             print("-------第{0}世代-------".format(g + 1))
             for i in range(len(pop)):
