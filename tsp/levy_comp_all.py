@@ -182,9 +182,10 @@ def levy(m,t,move):
 
 def main():
     start = time.time()
-    p_m = 0.4       #突然変異率
+    start_p_m = 0.4       #突然変異率
+    p_ml = 0.3
     p_c = 0.8       #交叉率
-    NGEN = 20000    #世代数
+    NGEN = 50000    #世代数
     ind_num = 100   #集団の大きさ
     
 
@@ -211,78 +212,54 @@ def main():
 
         dist = init_cost(co)
             
-        
+        pop = create_pop(ind_num,size)
+        calc_fit(pop,dist)
+        w = np.zeros(len(pop),float)
+        p_m = start_p_m       #突然変異率
+        m_f = False
+        move = int(size * 0.3)
 
-        for j in range(2):
-            pop = create_pop(ind_num,size)
+        for g in range(NGEN):
+            g_start = time.time()
+            if(g % 10000 == 0):
+                m_f = not m_f
+                p_m -= 0.05
+            print("-------第{0}世代-------".format(g))
+            for i in range(len(pop)):
+                w[i] = pop[i].total_cost
+
+            print("Max:{0}\nMin:{1}\nave:{2}\nBest root:{3}".format(max(w),min(w),sum(w) / 100,pop[np.argmin(w)].root))
+            plot_data[g] = min(w)
+
+            pop = roulette_choice1(pop,w)
+            pop = cross(pop,size,p_c)
+
+            if(m_f):
+                pop = mutate(pop,size,p_m)
+            elif(not m_f):
+                pop = mutate_l(pop,size,p_ml,move)
+
             calc_fit(pop,dist)
-            w = np.zeros(len(pop),float)
-            p_m = 0.4       #突然変異率
-            move = int(size * 0.7 / 2)       #移動範囲
-            if(j == 0):
-                for g in range(NGEN):
-                    g_start = time.time()
-                    print("-------第{0}世代-------".format(g))
-                    for i in range(len(pop)):
-                        w[i] = pop[i].total_cost
-
-                    print("Max:{0}\nMin:{1}\nave:{2}\nBest root:{3}".format(max(w),min(w),sum(w) / 100,pop[np.argmin(w)].root))
-                    plot_data[g] = min(w)
-
-                    pop = roulette_choice1(pop,w)
-                    pop = cross(pop,size,p_c)
-                    pop = mutate_l(pop,size,p_m,move)
-                    calc_fit(pop,dist)
-                    g_end = time.time()
-                    if(g % 1000 == 0):
-                        p_m -= 0.03
-                    print("remaining time{0}".format((g_end - g_start) * (NGEN - g) / 3600))
-                        
-
-                print("-------第{0}世代-------".format(g + 1))
-                for i in range(len(pop)):
-                    w[i] = pop[i].total_cost
-
-                print("Max:{0}\nMin:{1}\nBest root:{2}".format(max(w),min(w),pop[np.argmin(w)].root))
-                plot_data[g + 1] = min(w)
-                min_1 = str(min(w))
-                plt.plot(plot_x,plot_data)
-            elif(j == 1):
-                for g in range(NGEN):
-                    g_start = time.time()
-                    print("-------第{0}世代-------".format(g))
-                    for i in range(len(pop)):
-                        w[i] = pop[i].total_cost
-
-                    print("Max:{0}\nMin:{1}\nave:{2}\nBest root:{3}".format(max(w),min(w),sum(w) / 100,pop[np.argmin(w)].root))
-                    plot_data[g] = min(w)
-
-                    pop = roulette_choice1(pop,w)
-                    pop = cross(pop,size,p_c)
-                    pop = mutate(pop,size,p_m)
-                    calc_fit(pop,dist)
-                    g_end = time.time()
-                    print("remaining time{0}".format((g_end - g_start) * (NGEN - g) / 3600))
-                    if(g % 1000 == 0):
-                        p_m -= 0.03
-
-                print("-------第{0}世代-------".format(g + 1))
-                for i in range(len(pop)):
-                    w[i] = pop[i].total_cost
-
-                print("Max:{0}\nMin:{1}\nBest root:{2}".format(max(w),min(w),pop[np.argmin(w)].root))
-                plot_data[g + 1] = min(w)
-                min_2 = str(min(w))
-                plt.plot(plot_x,plot_data)
+            g_end = time.time()
+            print("remaining time{0}".format((g_end - g_start) * (NGEN - g) / 3600))
             
-        title = min_1 + " | " + min_2
+
+        print("-------第{0}世代-------".format(g + 1))
+        for i in range(len(pop)):
+            w[i] = pop[i].total_cost
+
+        print("Max:{0}\nMin:{1}\nBest root:{2}".format(max(w),min(w),pop[np.argmin(w)].root))
+        plot_data[g + 1] = min(w)
+        min_2 = str(min(w))
+        plt.plot(plot_x,plot_data)
+            
+        title = min_2
         plt.title(title)
         
-        output_f = r"C:\Users\imada\Desktop\Research\tsp\output\\" + tsp_f + "_{0}_{1}_{2}_{3}_{4}.png".format(NGEN,p_c,p_m,ind_num,move)
+        output_f = r"C:\Users\imada\Desktop\Research\tsp\output\\" + tsp_f + "_{0}_{1}_{2}_{3}_{4}.png".format(NGEN,p_c,start_p_m,ind_num,move)
         plt.savefig(output_f)
         elapsed_time = (time.time() - start) / 3600 
         print("elapsed_time:{0}".format(elapsed_time) + "[h]")
-
         plt.cla()
 
 if __name__ == '__main__':
