@@ -16,6 +16,11 @@ set_l = 0
 y1 = 0
 y2 = 0
 
+o_length = 0
+sumInc = 0
+alpha = 5
+Bgn = [0] * alpha
+
 class Individual(object):
     def __init__(self,size):
         self.root = np.arange(size)
@@ -181,6 +186,88 @@ def levy(m,t,move):
         if(x <= move and x >= 1):
             return int(x)
 
+def LK(ind,size,dist):
+    global alpha
+    global o_length
+    global Bgn
+    global sumInc
+    i = 0
+    restricted = np.zeros(size,dtype = int)
+    copy_root = copy.deepcopy(np.insert(ind.root,len(ind.root),ind.root).tolist())
+    l_root = ind.root.tolist()
+    while(1):
+        if(i >= size):
+            break
+        i += 1
+        Bgn[0] = (Bgn[0] + 1) % size
+        ind.calc_root(dist)
+        o_length = ind.total_cost
+        sumInc = 0
+        if(i%100 == 0):
+            print("i0 = {0}; i = {1}: {2},\r".format(Bgn[0],i,o_length))
+
+        pathin = copy.deepcopy(copy_root[Bgn[0]:(Bgn[0]+size)])
+        if(improvedPath(pathin, size, 1, restricted, l_root, dist)):
+            i = 0
+        ind.root = np.array(l_root)
+
+def improvedPath(path, n, depth, restricted, pathout, dist):
+    global alpha
+    global o_length
+    global Bgn
+    global sumInc
+    gmin = (o_length * (-1)) / n / 4 if n >= 10000 else (o_length * (-1)) / n / 2 
+    if(depth < alpha):
+        for j in range(n):
+            i = (j + Bgn[depth]) % (n-1)
+            nid = path[i]
+            if(not restricted[nid]):
+                g = dist[path[i]][path[i+1]] - dist[path[n-1]][path[i]]
+                if(g > gmin):
+                    sumInc += dist[path[i+1]][path[0]] - dist[path[n-1]][path[0]] - g 
+                    path = Reverse(path,i+1,n-1)
+                    if(sumInc < 0):
+                        pathout[:] = path[:]
+                        print("{0}#{1},\t\t\t \r".format(depth,(o_length + sumInc)))
+                        return 1
+                    restricted[nid] = 1
+                    fimp = improvedPath(path, n, depth+1, restricted, pathout, dist)
+                    restricted[nid] = 0
+                    if(fimp):
+                        return 1
+            Bgn[depth] = (Bgn[depth] + 1) % (n-1)
+    else:
+        i = 0
+        g = -2147483648
+        for j in range(n-1):
+            h = dist[path[j]][path[j+1]] - dist[path[n-1]][path[j]]
+            if(h > g):
+                g = h
+                i = j
+        if(g > 0):
+            nid = path[i]
+            sumInc += dist[path[i+1]][path[0]] - dist[path[n-1]][path[0]] - g
+            path = Reverse(path,i+1,n-1)
+            if(sumInc < 0):
+                pathout[:] = path[:]
+                print("{0}${1},\r".format(depth,o_length + sumInc))
+                return 1
+            restricted[nid] = 1
+            fimp = improvedPath(path, n, depth+1, restricted, pathout, dist)
+            restricted[nid] = 0
+            if(fimp):
+                return 1
+    return 0
+
+def Reverse(path, b, e):
+    while(b < e):
+        tmp = path[b]
+        path[b] = path[e]
+        path[e] = tmp
+        b += 1
+        e -= 1
+    return path
+
 def main():
     start = time.time()
     start_p_m = 0.4       #突然変異率
@@ -190,7 +277,7 @@ def main():
     
     m_f = True #False ⇒ levy  True ⇒ GA
 
-    tsp_f = "att532"
+    tsp_f = "st70"
 
     input_f = r"C:\Users\imada\Desktop\Research\tsp\\" + tsp_f +".txt" 
     tsp_data = open(input_f,"r")
@@ -224,68 +311,8 @@ def main():
     c_score = min(w)
     prev_score = min(w)
     start_score = min(w)
-    
-    for g in range(NGEN):
-        g_start = time.time()
-        #if(g == 60000):
-            #m_f = not m_f
-        if(g % 20000 == 0):
-            p_m -= 0.05
-            p_ml -= 0.05
-            #if(g <= 60000):
-             #   p_m -= 0.05
-            #else:
-             #   p_ml -= 0.05
-        if(prev_score <= c_score):
-            e_count += 1
-            if(e_count == 2000):
-                m_f = not m_f
-                e_count = 0
-                start_score = prev_score
-        else:
-            prev_score = c_score
-            if(m_f and start_score > c_score):
-                m_f = not m_f
-            e_count = 0
 
-        print("-------第{0}世代-------".format(g))
-        for i in range(len(pop)):
-            w[i] = pop[i].total_cost
-
-        print("Max:{0}\nMin:{1}\nave:{2}\nBest root:{3}\ne_count:{4}".format(max(w),min(w),sum(w) / 100,pop[np.argmin(w)].root,e_count))
-        plot_data[g] = min(w)
-
-        pop = roulette_choice1(pop,w)
-        pop = cross(pop,size,p_c)
-        if(m_f):
-            pop = mutate(pop,size,p_m)
-        elif(not m_f):
-            pop = mutate_l(pop,size,p_ml,move)
-        calc_fit(pop,dist)
-        c_score = min(w)
-        g_end = time.time()
-        print("remaining time{0}".format((g_end - g_start) * (NGEN - g) / 3600))
-        #if(g % 1000 == 0):
-        #    p_m -= 0.01
-
-    print("-------第{0}世代-------".format(g + 1))
-    for i in range(len(pop)):
-        w[i] = pop[i].total_cost
-
-    print("Max:{0}\nMin:{1}\nBest root:{2}".format(max(w),min(w),pop[np.argmin(w)].root))
-    plot_data[g + 1] = min(w)
-    min_2 = str(min(w))
-    plt.plot(plot_x,plot_data)
-        
-    title = min_2
-    plt.title(title)
-    
-    output_f = r"C:\Users\imada\Desktop\Research\tsp\output\\" + tsp_f + "_{0}_{1}_{2}_{3}_{4}_{5}.png".format(NGEN,p_c,start_p_m,ind_num,move,m_f)
-    plt.savefig(output_f)
-    elapsed_time = (time.time() - start) / 3600 
-    print("elapsed_time:{0}".format(elapsed_time) + "[h]")
-
-    plt.show()
+    LK(pop[0],size,dist)
 
 if __name__ == '__main__':
     main()

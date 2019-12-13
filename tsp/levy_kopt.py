@@ -110,10 +110,10 @@ def mutate_l(pop, size, p_m,move):
     for mutant in pop:
         r = random.random()
         if(r < p_m):
-            for i in range(levy(0,0.5,10)):
+            for i in range(levy(0,0.5,10,1)):
                 while(1):
                     r1 = random.randint(0,size - 1)
-                    walk = levy(0,0.5,move)
+                    walk = levy(0,0.5,move,1)
                     if(r % 2 == 0):
                         r2 = r1 + walk
                     else:
@@ -121,8 +121,10 @@ def mutate_l(pop, size, p_m,move):
                     
                     if(r2 >= 0 and r2 <= size):
                         break
-                    
-                mutant.root[r1],mutant.root[r2] = mutant.root[r2],mutant.root[r1]
+
+                insert = mutant.root[r1]
+                mutant.root = np.delete(mutant.root,r1)
+                mutant.root = np.insert(mutant.root,r2,insert)
 
     return pop
 
@@ -130,13 +132,12 @@ def mutate(pop,size,p_m):
     for mutant in pop:
         r = random.random()
         if(r < p_m):
-            while(1):
-                r1 = random.randint(0,size - 1)
-                r2 = random.randint(0,size - 1)
-                if(r1 != r2):
-                    break
-
-            mutant.root[r1],mutant.root[r2] = mutant.root[r2],mutant.root[r1]
+            r1 = random.randint(0,size - 1)
+            r2 = random.randint(0,size - 1)
+            insert = mutant.root[r1]
+            mutant.root = np.delete(mutant.root,r1)
+            mutant.root = np.insert(mutant.root,r2,insert)
+            print()
 
     return pop
 
@@ -156,7 +157,7 @@ def init_cost(co):
 
     return c
 
-def levy(m,t,move):
+def levy(m,t,move,start):
     global set_l,y1,y2
     while(1):
         if(set_l == 0):
@@ -178,8 +179,11 @@ def levy(m,t,move):
             set_l = 0
 
         x = m + (t / np.square(y))
-        if(x <= move and x >= 1):
+        if(x <= move and x >= start):
             return int(x)
+
+def three_opt(ind,dist):
+
 
 def main():
     start = time.time()
@@ -190,7 +194,7 @@ def main():
     
     m_f = True #False ⇒ levy  True ⇒ GA
 
-    tsp_f = "att532"
+    tsp_f = "st70"
 
     input_f = r"C:\Users\imada\Desktop\Research\tsp\\" + tsp_f +".txt" 
     tsp_data = open(input_f,"r")

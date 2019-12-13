@@ -9,16 +9,6 @@ import bisect
 import matplotlib.pyplot as plt
 sys.path.append('/usr/local/lib/python3.6/dist-packages')
 
-from datetime import datetime
-from joblib import Parallel,delayed
-from simanneal import Annealer
-from scoop import futures
-from deap import base
-from deap import creator
-from deap import tools
-from deap import cma
-from itertools import zip_longest
-
 def main():
     n = 20
     i = 0
@@ -44,7 +34,7 @@ def main():
             y = y2
             set_l = 0
 
-        rand = (1 / np.square(y))
+        rand = ((0.25) / np.square(y))
 
         if(rand <= 20 and rand >= 1):
             i += 1
