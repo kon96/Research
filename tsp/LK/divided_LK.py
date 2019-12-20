@@ -311,6 +311,7 @@ def main():
     ind_num = 40   #集団の大きさ
     
     m_f = False #False ⇒ levy  True ⇒ GA
+    half = True #False ⇒ 後半  True ⇒ 前半 
 
     tsp_f = "lin105"
 
@@ -382,9 +383,16 @@ def main():
 
         if(prev_score <= c_score):
             e_count += 1
-            if(e_count % 500 == 0):
+            if(e_count % 200 == 0):
                 m = np.argmin(w)
-                LK(pop[m],size,dist)
+                if(half):
+                    divided_root = divided_LK(pop[m].root[0:int(size/2)],size,int(size/2),dist)
+                    pop[m].root[0:int(size/2)] = copy.deepcopy(divided_root[:])
+                    half = not half
+                elif(not half):
+                    divided_root = divided_LK(pop[m].root[int(size/2):size],size,len(pop[m].root[int(size/2):size]),dist)
+                    pop[m].root[int(size/2):size] = copy.deepcopy(divided_root[:])
+                    half = not half
                 calc_ind(pop[m],dist)    
                 w[m] = pop[m].total_cost
                 c_score = w[m]
@@ -392,7 +400,7 @@ def main():
                 if(prev_score > c_score):
                     prev_score = c_score
                     e_count = 0
-                elif(e_count > 500):
+                elif(e_count > 200):
                     m_f = not m_f
         else:
             prev_score = c_score
@@ -415,7 +423,7 @@ def main():
     title = min_2
     plt.title(title)
     
-    output_f = r"C:\Users\imada\Desktop\Research\tsp\LK\output\\" + tsp_f + "_{0}_{1}_{2}_{3}_{4}_{5}.png".format(NGEN,p_c,start_p_m,ind_num,move,m_f)
+    output_f = r"C:\Users\imada\Desktop\Research\tsp\LK\\divided_output\\" + tsp_f + "_{0}_{1}_{2}_{3}_{4}_{5}.png".format(NGEN,p_c,start_p_m,ind_num,move,m_f)
     plt.savefig(output_f)
     elapsed_time = (time.time() - start) / 3600 
     print("elapsed_time:{0}".format(elapsed_time) + "[h]")
