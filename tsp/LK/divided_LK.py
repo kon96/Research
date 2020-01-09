@@ -308,7 +308,7 @@ def main():
     start_p_m = 0.2       #突然変異率
     p_c = 0.8       #交叉率
     NGEN = 10000    #世代数
-    ind_num = 40   #集団の大きさ
+    ind_num = 50   #集団の大きさ
     
     m_f = False #False ⇒ levy  True ⇒ GA
     half = True #False ⇒ 後半  True ⇒ 前半 
@@ -379,7 +379,6 @@ def main():
             pop = mutate_l(pop,size,p_ml,move)
         
         calc_pop(pop,dist,w)
-        
 
         if(prev_score <= c_score):
             e_count += 1
@@ -401,7 +400,7 @@ def main():
                     prev_score = c_score
                     e_count = 0
                 elif(e_count > 200):
-                    m_f = not m_f
+                    m_f = not m_f           
         else:
             prev_score = c_score
             e_count = 0
@@ -423,7 +422,7 @@ def main():
     title = min_2
     plt.title(title)
     
-    output_f = r"C:\Users\imada\Desktop\Research\tsp\LK\\divided_output\\" + tsp_f + "_{0}_{1}_{2}_{3}_{4}_{5}.png".format(NGEN,p_c,start_p_m,ind_num,move,m_f)
+    output_f = r"C:\Users\imada\Desktop\Research\tsp\LK\\divided_output\\" + tsp_f + "d_{0}_{1}_{2}_{3}_{4}_{5}.png".format(NGEN,p_c,start_p_m,ind_num,move,m_f)
     plt.savefig(output_f)
     elapsed_time = (time.time() - start) / 3600 
     print("elapsed_time:{0}".format(elapsed_time) + "[h]")

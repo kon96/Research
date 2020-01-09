@@ -397,13 +397,13 @@ def main():
         else:
             prev_score = c_score
             e_count = 0
-
         
         g_end = time.time()
         print("m_f:{0}".format(m_f))
         print("remaining time{0}".format((g_end - g_start) * (NGEN - g) / 3600))
 
     print("-------第{0}世代-------".format(g + 1))
+
 
     calc_pop(pop,dist,w)
 
