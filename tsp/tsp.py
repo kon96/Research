@@ -175,7 +175,8 @@ def main():
     NGEN = 20000    #世代数
     ind_num = 100   #集団の大きさ
     
-    files = ["att532","berlin52","burma14","eil76","kroA100","lin105","lin318","pr76","pr439","pr1002","rat783","st70"]
+    #files = ["att532","berlin52","burma14","eil76","kroA100","lin105","lin318","pr76","pr439","pr1002","rat783","st70"]
+    files = ["lin105"]
 
     for tsp_f in files:
 

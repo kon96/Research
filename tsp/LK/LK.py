@@ -82,19 +82,18 @@ def roulette_choice1(pop,w):
     new_pop = []
     tot = []
     tmp = np.zeros(len(pop),float)
-    count = [0] * len(pop)
 
     for t,fit in enumerate(w):
         tmp[t] = (max(w) - fit) / (max(w) - min(w))
 
     #elite = w.argsort()[0:5]
-    elite = [np.argmin(w)] * 5
+    elite = [np.argmin(w)] * 3
     for x in elite:
         new_pop.append(copy.deepcopy(pop[x]))
     
     tot = np.cumsum(tmp)
 
-    for j in range(len(pop) - 5):
+    for j in range(len(pop) - 3):
         r = random.random() * max(tot)
         i = bisect.bisect_right(tot, r)
 
@@ -305,14 +304,14 @@ def Reverse(path, b, e):
 
 def main():
     start = time.time()
-    start_p_m = 0.2       #突然変異率
+    start_p_m = 0.35       #突然変異率
     p_c = 0.8       #交叉率
-    NGEN = 10000    #世代数
-    ind_num = 40   #集団の大きさ
+    NGEN = 100000    #世代数
+    ind_num = 100   #集団の大きさ
     
     m_f = False #False ⇒ levy  True ⇒ GA
 
-    tsp_f = "lin105"
+    tsp_f = "st70"
 
     input_f = r"C:\Users\imada\Desktop\Research\tsp\\" + tsp_f +".txt" 
     tsp_data = open(input_f,"r")
@@ -351,9 +350,9 @@ def main():
 
         #if(g == 60000):
             #m_f = not m_f
-        if(g % 2000 == 0):
-            p_m -= 0.02
-            p_ml -= 0.02
+        if(g % 20000 == 0):
+            p_m -= 0.05
+            p_ml -= 0.05
             #if(g <= 60000):
              #   p_m -= 0.05
             #else:
@@ -382,7 +381,7 @@ def main():
 
         if(prev_score <= c_score):
             e_count += 1
-            if(e_count % 500 == 0):
+            if(e_count % 2000 == 0):
                 m = np.argmin(w)
                 LK(pop[m],size,dist)
                 calc_ind(pop[m],dist)    
