@@ -17,8 +17,11 @@ from deap import tools
 from deap import cma
 from itertools import zip_longest
 
+d_e_n_pattern1 = np.array([0,6,7,8,9,10,12,19,20,21,22,23])
+d_e_n_pattern2 = np.array([1,2,3,4,5,13,14,15,16,17,24])
+
 #ALL
-all_employees = [i for i in range(0,25)]
+all_employees = np.array([i for i in range(0,25)])
 max_num_d = np.array([11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,18,11,11,11,11,11,11,11])
 min_num_d = np.array([8,8,8,8,7,8,8,8,7,7,7,7,7,8,8,8,8,8,7,8,8,8,13,8,8,7,8,8,8,8])
 max_num_e = np.array([4 for i in range(30)])
@@ -126,11 +129,11 @@ other = np.array([
 ])
 
 #禁止勤務パターン
-b_shift = ['[0|5][1-4][0|5]','[1-4]{7}','[0|5]{6}','[1]{8}',
-           '[3][0-5][3]','[3][0-5]{2}[3]','[3][0-5]{3}[3]',
+b_shift = ['[0|5][1-4][0|5]','[1-4]{7}','[0|5]{6}','[1][^1]{7}',
+           '[^3][3][^3]','[3][0-5]{2}[3]','[3][0-5]{3}[3]',
            '[3][0-5]{4}[3]','[3][0-5]{5}[3]','[3]{3}',
-           '[1]{5}','[2]{4}','[3][1]','[3][2]','[2][1]',
-           '[3][0|5][1]'
+           '[1]{5}','[2]{4}','[3][1]','[3][2]','[3][4]','[2][1]',
+           '[2][4]','[3][0|5][1]','[3][0|5][4]'
 ]
 
 
@@ -229,7 +232,16 @@ class Shift_G(object):
 
         return enum
 
-class LocalSearch(Annealer):
+    """def save(self,writer):
+        writer.writerow(self.d_max)
+        writer.writerow(self.d_min)
+        writer.writerow(self.e_max)
+        writer.writerow(self.e_min)
+        writer.writerow(self.n_max)
+        writer.writerow(self.n_min)
+        writer.writerow("\n")"""
+
+"""class LocalSearch(Annealer):
 
     def __init__(self, init_state):
         super(LocalSearch,self).__init__(init_state)
@@ -255,6 +267,35 @@ class LocalSearch(Annealer):
             break
     
         self.state[n1][s],self.state[n1][c] = self.state[n1][c],self.state[n1][s]
+
+    def energy(self):
+       e = cal_p(self.state)
+       return e"""
+
+class LocalSearch(Annealer):
+
+    def __init__(self, init_state):
+        super(LocalSearch,self).__init__(init_state)
+
+    def move(self):
+        while(1):
+            n1 = random.randint(0,29)
+            n2 = n1 + random.randint(-3,3)
+            if(n2 == n1 or n2 > 29 or n2 < 0):
+                continue
+            j = random.choice(list(range(len(self.state))))
+            if(self.state[j][n1] <= 3 and self.state[j][n2] <= 3):
+                break
+
+        ind1 = np.where(self.state[:,n1] == self.state[j][n2])
+        ind2 = np.where(self.state[:,n2] == self.state[j][n1])
+
+        k1 = ind1[0][random.choice(list(range(len(ind1))))]
+        k2 = ind2[0][random.choice(list(range(len(ind2))))] 
+
+        self.state[j][n1],self.state[j][n2] = self.state[j][n2],self.state[j][n1]
+        self.state[k1][n1],self.state[k2][n2] = self.state[k2][n2],self.state[k1][n1]
+        
 
     def energy(self):
        e = cal_p(self.state)
@@ -387,10 +428,10 @@ def employee_num(pop):
     p2 = 0
     p2 += all_shift.check(pop)
     p2 += A.check(pop)
-    p2 += A_SS.check(pop) * 3
+    p2 += A_SS.check(pop)
     p2 += B.check(pop)
     p2 += B_SS.check(pop)
-    p2 += B_SS_s.check(pop) * 3
+    p2 += B_SS_s.check(pop)
     p2 += B_rq_s.check(pop)
     p2 += o_n.check(pop)
 
@@ -398,33 +439,54 @@ def employee_num(pop):
 
 def ShiftPattern(pop):
     penalty = 0
-    for ind in pop:
+    for i,ind in enumerate(pop):
         
         d = np.sum(ind == 1)
         e = np.sum(ind == 2)
         n = np.sum(ind == 3)
         f = np.sum(ind == 0)
         f += np.sum(ind == 5)
-        n_list = np.where(ind == 3)
 
-        if(d > 15):
-            penalty += 1
-        if(e > 6 or e < 4):
-            penalty += 1
-        if(n > 4 or n < 2):
-            penalty += 1
+        if(i in d_e_n_pattern1):
+            if(d > 15):
+                penalty += 1
+            if(e > 6 or e < 4):
+                penalty += 1
+            if(n > 4 or n < 2):
+                penalty += 1
+        elif(i in d_e_n_pattern2):
+            if(d > 14):
+                penalty += 1
+            if(e > 6 or e < 4):
+                penalty += 1
+            if(n > 6 or n < 3):
+                penalty += 1
+        elif(i == 11):
+            if(d > 17):
+                penalty += 1
+            if(e != 2):
+                penalty += 1
+            if(n != 2):
+                penalty += 1
+        elif(i == 18):
+            if(d > 17):
+                penalty += 1
+            if(e > 4 or e < 2):
+                penalty += 1
+            if(n > 4):
+                penalty += 1
+        else:
+            pass
+
         if(f < 9):
             penalty += 1
-        """for x in n_list[0]:
-            if( x == 0):
-                if(x + 1 != 3):
-                    penalty += 1
-            elif( x == len(ind) - 1):
-                if(x - 1 != 3):
-                    penalty += 1
-            else:
-                if(x + 1 != 3 and x - 1 != 3):
-                    penalty += 1"""
+
+        if(ind[0] == 3):
+            if(ind[1] != 3):
+                penalty += 1
+        if(ind[29] == 3):
+            if(ind[28] != 3):
+                penalty += 1
 
         map_l = map(str,ind)
         pattern = ''.join(map_l)
@@ -523,16 +585,15 @@ def mut(individual):
 
     origine = ind
 
-    r = None
     j = random.randint(0,29)
-    i = np.where(ind[:,j] == 3)
-    r = np.random.randint(0,len(i[0]))
+    
 
     while(1):
         k = random.randint(0,24)
-        if(i[0][r] != k and ind[k][j] < 3):
+        i = random.randint(0,24)
+        if(i != k and ind[k][j] <= 3 and ind[i][j] <= 3):
             break
-    ind[i[0][r]][j],ind[k][j] = ind[k][j],ind[i[0][r]][j]
+    ind[i][j],ind[k][j] = ind[k][j],ind[i][j]
     
     day = ind[:,j]
 
@@ -563,7 +624,7 @@ def cal_p(pop):
     num2 = employee_num(pop) 
     num3 = ShiftPattern(pop)
     
-    penalty = num2 + (num3 * 10)
+    penalty = num2 + (num3 * 50)
 
     return penalty
 
@@ -666,7 +727,7 @@ def create_pop():
 def simulated_annealing(pop):
     population = copy.deepcopy(pop)
     prob = LocalSearch(population)
-    prob.steps = 10000
+    prob.steps = 20000
     prob.copy_strategy = "deepcopy"
     prob.anneal()
 
@@ -693,7 +754,7 @@ def main():
     global origine
     start = time.time()
     pop = create_pop()
-    NGEN = 20000
+    NGEN = 50000
     m = 10
     c = 0
 
@@ -712,7 +773,6 @@ def main():
        
         print("-- Generation %i --" % g)
         offspring = pop
-
         ind_list = toolbox.mate(offspring)
         fitnesses = Parallel(n_jobs=-1)( [delayed(cal_p)(ind) for ind in ind_list])
         i = fitnesses.index(min(fitnesses))
@@ -755,23 +815,37 @@ def main():
             best_fits = fits1
             best_pop = copy.deepcopy(pop)
             origine = copy.deepcopy(best_pop)
+            best_generation = g
 
+    #best_pop = simulated_annealing(pop)
+    fits1 = cal_p(pop)
     print("-- End of (successful) evolution --")
     print("Best individual is ")
+    print("Generation %d" % best_generation)
     result(best_pop)
     elapsed_time = (time.time() - start) / 3600 
     print("elapsed_time:{0}".format(elapsed_time) + "[h]")
-    s = r"C:\Users\imada\Desktop\Research\output" + "\\"
+
+    s = r"C:\Users\owner\Desktop\Research\output\csv" + "\\"
     fname = s + datetime.now().strftime("%Y%m%d_%H%M%S") 
     f = open(fname + '.csv',mode = 'w')
     writer_d = csv.writer(f,lineterminator = '\n')
     for i,data in enumerate(best_pop):
         x = np.insert(data,0,i + 1)
-        print(x)
         writer_d.writerow(x)
-
     f.close()
 
+    """f1name = s + "error_list.csv"
+    f1 = open(f1name,"w")
+    write = csv.writer(f1,lineterminator = '\n')
+    A.save(write)
+    A_SS.save(write)
+    B.save(write)
+    B_SS.save(write)
+    B_SS_s.save(write)
+    B_rq_s.save(write)
+    o_n.save(write)
+    all_shift.save(write)"""
 
 if __name__ == '__main__':
     main()

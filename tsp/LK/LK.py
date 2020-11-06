@@ -27,43 +27,73 @@ class Individual(object):
         np.random.shuffle(self.root)
         self.change = True
         self.cost = np.zeros(size,float)
+        self.total_cost = 0
 
-    def calc_root(self,dist):
-        for i in range(len(self.root) - 1):
-            self.cost[i] = dist[self.root[i]][self.root[i + 1]]
+def levy(m,t,move):
+    global set_l,y1,y2
+    while(1):
+        if(set_l == 0):
+            while(1):
+                u1 = np.random.rand()
+                u2 = np.random.rand()
+                if(u1 != 0 and u2 != 0):
+                    break
+            r = np.sqrt(-2 * np.log(u1))
+            t = (np.pi * u2) / 2
 
-        self.cost[i + 1] = dist[self.root[i + 1]][self.root[0]]
+            y1 = r * np.cos(t)
+            y2 = r * np.sin(t)
 
-        self.total_cost = np.sum(self.cost)
+            set_l = 1
+            y = y1
+        elif(set_l == 1):
+            y = y2
+            set_l = 0
 
-        self.change = False
+        x = m + (t / np.square(y))
+        if(x <= move and x >= 1):
+            return int(x)
 
-def calc_fit(pop,dist):
-    for i in pop:
-        if(i.change):
-            i.calc_root(dist)
-    
-    return pop
+def calc_root(root,dist):
+    total_cost = 0
+    for i in range(len(root)-1):
+        total_cost += dist[root[i]][root[i+1]]
+    total_cost += dist[root[i+1]][root[0]]
 
-            
+    return int(total_cost)
+
+def calc_ind(ind,dist):
+    for i in range(len(ind.root) - 1):
+        ind.cost[i] = dist[ind.root[i]][ind.root[i + 1]]
+
+    ind.cost[i + 1] = dist[ind.root[i + 1]][ind.root[0]]
+    ind.total_cost = int(np.sum(ind.cost))
+    ind.change = False
+
+def calc_pop(pop,dist,w):
+    for i,ind in enumerate(pop):
+        if(ind.change):
+            calc_ind(ind,dist)
+            w[i] = ind.total_cost
+
 def roulette_choice1(pop,w):
     if(max(w) == min(w)):
         return pop
     new_pop = []
     tot = []
     tmp = np.zeros(len(pop),float)
-    count = [0] * len(pop)
 
     for t,fit in enumerate(w):
         tmp[t] = (max(w) - fit) / (max(w) - min(w))
 
-    elite = w.argsort()[0:5]
+    #elite = w.argsort()[0:5]
+    elite = [np.argmin(w)] * 3
     for x in elite:
-        new_pop.append(pop[x])
+        new_pop.append(copy.deepcopy(pop[x]))
     
     tot = np.cumsum(tmp)
 
-    for j in range(len(pop) - 5):
+    for j in range(len(pop) - 3):
         r = random.random() * max(tot)
         i = bisect.bisect_right(tot, r)
 
@@ -110,6 +140,19 @@ def cross(pop,size,p_c):
 
     return offspring
 
+def mutate(pop,size,p_m):
+    for mutant in pop:
+        r = random.random()
+        if(r < p_m):
+            while(1):
+                r1 = random.randint(0,size - 1)
+                r2 = random.randint(0,size - 1)
+                if(r1 != r2):
+                    break
+
+            mutant.root[r1],mutant.root[r2] = mutant.root[r2],mutant.root[r1]
+
+    return pop
 
 def mutate_l(pop, size, p_m,move):
     for mutant in pop:
@@ -131,20 +174,6 @@ def mutate_l(pop, size, p_m,move):
 
     return pop
 
-def mutate(pop,size,p_m):
-    for mutant in pop:
-        r = random.random()
-        if(r < p_m):
-            while(1):
-                r1 = random.randint(0,size - 1)
-                r2 = random.randint(0,size - 1)
-                if(r1 != r2):
-                    break
-
-            mutant.root[r1],mutant.root[r2] = mutant.root[r2],mutant.root[r1]
-
-    return pop
-
 def create_pop(num,size):
     pop = []
     for i in range(num):
@@ -161,74 +190,78 @@ def init_cost(co):
 
     return c
 
-def levy(m,t,move):
-    global set_l,y1,y2
-    while(1):
-        if(set_l == 0):
-            while(1):
-                u1 = np.random.rand()
-                u2 = np.random.rand()
-                if(u1 != 0 and u2 != 0):
-                    break
-            r = np.sqrt(-2 * np.log(u1))
-            t = (np.pi * u2) / 2
-
-            y1 = r * np.cos(t)
-            y2 = r * np.sin(t)
-
-            set_l = 1
-            y = y1
-        elif(set_l == 1):
-            y = y2
-            set_l = 0
-
-        x = m + (t / np.square(y))
-        if(x <= move and x >= 1):
-            return int(x)
-
 def LK(ind,size,dist):
     global alpha
     global o_length
     global Bgn
     global sumInc
     i = 0
-    restricted = np.zeros(size,dtype = int)
-    copy_root = copy.deepcopy(np.insert(ind.root,len(ind.root),ind.root).tolist())
+    restricted = np.zeros(size,dtype = int)   
     l_root = ind.root.tolist()
     while(1):
         if(i >= size):
             break
         i += 1
         Bgn[0] = (Bgn[0] + 1) % size
-        ind.calc_root(dist)
+        calc_ind(ind,dist)
         o_length = ind.total_cost
         sumInc = 0
         if(i%100 == 0):
             print("i0 = {0}; i = {1}: {2},\r".format(Bgn[0],i,o_length))
 
+        copy_root = copy.deepcopy(np.insert(ind.root,len(ind.root),ind.root).tolist())
         pathin = copy.deepcopy(copy_root[Bgn[0]:(Bgn[0]+size)])
+
         if(improvedPath(pathin, size, 1, restricted, l_root, dist)):
             i = 0
         ind.root = np.array(l_root)
+
+def divided_LK(root,o_size,size,dist):
+    global alpha
+    global o_length
+    global Bgn
+    global sumInc
+    i = 0
+    restricted = np.zeros(o_size,dtype = int)  
+    l_root = root.tolist()
+    while(1):
+        if(i >= size):
+            break
+        i += 1
+        Bgn[0] = (Bgn[0] + 1) % size
+        
+        o_length = calc_root(root,dist)
+        sumInc = 0
+        if(i%100 == 0):
+            print("i0 = {0}; i = {1}: {2}".format(Bgn[0],i,o_length),end="")
+
+        copy_root = copy.deepcopy(np.insert(root,len(root),root).tolist())
+        pathin = copy.deepcopy(copy_root[Bgn[0]:(Bgn[0]+size)])
+
+        if(improvedPath(pathin, size, 1, restricted, l_root, dist)):
+            i = 0
+        root = np.array(l_root)
+    return root
 
 def improvedPath(path, n, depth, restricted, pathout, dist):
     global alpha
     global o_length
     global Bgn
     global sumInc
-    gmin = (o_length * (-1)) / n / 4 if n >= 10000 else (o_length * (-1)) / n / 2 
+    gmin = int((o_length * (-1)) / n / 4 if n >= 10000 else (o_length * (-1)) / n / 2 )
     if(depth < alpha):
         for j in range(n):
             i = (j + Bgn[depth]) % (n-1)
             nid = path[i]
             if(not restricted[nid]):
-                g = dist[path[i]][path[i+1]] - dist[path[n-1]][path[i]]
+                g = int(dist[path[i]][path[i+1]] - dist[path[n-1]][path[i]])
                 if(g > gmin):
-                    sumInc += dist[path[i+1]][path[0]] - dist[path[n-1]][path[0]] - g 
+                    sumInc += int(dist[path[i+1]][path[0]] - dist[path[n-1]][path[0]] - g )
                     path = Reverse(path,i+1,n-1)
+                    sumInc = int(sumInc)
                     if(sumInc < 0):
                         pathout[:] = path[:]
-                        print("{0}#{1},\t\t\t \r".format(depth,(o_length + sumInc)))
+                        print("\r{0}#{1}\t\t\t".format(depth,(o_length + sumInc)),end="")
                         return 1
                     restricted[nid] = 1
                     fimp = improvedPath(path, n, depth+1, restricted, pathout, dist)
@@ -240,17 +273,18 @@ def improvedPath(path, n, depth, restricted, pathout, dist):
         i = 0
         g = -2147483648
         for j in range(n-1):
-            h = dist[path[j]][path[j+1]] - dist[path[n-1]][path[j]]
+            h = int(dist[path[j]][path[j+1]] - dist[path[n-1]][path[j]])
             if(h > g):
                 g = h
                 i = j
         if(g > 0):
             nid = path[i]
-            sumInc += dist[path[i+1]][path[0]] - dist[path[n-1]][path[0]] - g
+            sumInc += int(dist[path[i+1]][path[0]] - dist[path[n-1]][path[0]] - g)
             path = Reverse(path,i+1,n-1)
+            sumInc = int(sumInc)
             if(sumInc < 0):
                 pathout[:] = path[:]
-                print("{0}${1},\r".format(depth,o_length + sumInc))
+                print("\r{0}${1}".format(depth,o_length + sumInc),end = "")
                 return 1
             restricted[nid] = 1
             fimp = improvedPath(path, n, depth+1, restricted, pathout, dist)
@@ -270,12 +304,12 @@ def Reverse(path, b, e):
 
 def main():
     start = time.time()
-    start_p_m = 0.4       #突然変異率
+    start_p_m = 0.35       #突然変異率
     p_c = 0.8       #交叉率
     NGEN = 100000    #世代数
     ind_num = 100   #集団の大きさ
     
-    m_f = True #False ⇒ levy  True ⇒ GA
+    m_f = False #False ⇒ levy  True ⇒ GA
 
     tsp_f = "st70"
 
@@ -299,20 +333,95 @@ def main():
     dist = init_cost(co)
         
     pop = create_pop(ind_num,size)
-    calc_fit(pop,dist)
-    w = np.zeros(len(pop),float)
-    for i in range(len(pop)):
-            w[i] = pop[i].total_cost
+    w = np.zeros(len(pop),int)
+    calc_pop(pop,dist,w)
     
     p_m = start_p_m       #突然変異率
-    p_ml = 0.4 
+    p_ml = start_p_m 
     move = (size * 0.3)       #移動範囲
     e_count = 0
+    mutate_count = 0
     c_score = min(w)
     prev_score = min(w)
-    start_score = min(w)
+    
 
-    LK(pop[0],size,dist)
+    for g in range(NGEN):
+        g_start = time.time()
+
+        #if(g == 60000):
+            #m_f = not m_f
+        if(g % 20000 == 0):
+            p_m -= 0.05
+            p_ml -= 0.05
+            #if(g <= 60000):
+             #   p_m -= 0.05
+            #else:
+             #   p_ml -= 0.05
+        
+            
+        print("-------第{0}世代-------".format(g))
+
+        print("Max:{0}\nMin:{1}\nave:{2}\nBest Score:{3}\nBest root:{4}\ne_count:{5}".format(max(w),min(w),(sum(w) / ind_num),prev_score,pop[np.argmin(w)].root,e_count))
+        plot_data[g] = min(w)
+        c_score = min(w)
+
+        pop = roulette_choice1(pop,w)
+        pop = cross(pop,size,p_c)
+        if(m_f):
+            pop = mutate(pop,size,p_m)
+            mutate_count += 1
+            if(mutate_count == 200):
+                m_f = not m_f
+                mutate_count = 0
+        elif(not m_f):
+            pop = mutate_l(pop,size,p_ml,move)
+        
+        calc_pop(pop,dist,w)
+        
+
+        if(prev_score <= c_score):
+            e_count += 1
+            if(e_count % 2000 == 0):
+                m = np.argmin(w)
+                LK(pop[m],size,dist)
+                calc_ind(pop[m],dist)    
+                w[m] = pop[m].total_cost
+                c_score = w[m]
+                print()
+                if(prev_score > c_score):
+                    prev_score = c_score
+                    e_count = 0
+                elif(e_count > 500):
+                    m_f = not m_f
+        else:
+            prev_score = c_score
+            e_count = 0
+        
+        g_end = time.time()
+        print("m_f:{0}".format(m_f))
+        print("remaining time{0}".format((g_end - g_start) * (NGEN - g) / 3600))
+
+    print("-------第{0}世代-------".format(g + 1))
+
+
+    calc_pop(pop,dist,w)
+
+    print("Max:{0}\nMin:{1}\nBest root:{2}".format(max(w),min(w),pop[np.argmin(w)].root))
+    plot_data[g + 1] = min(w)
+    min_2 = str(prev_score)
+    plt.plot(plot_x,plot_data)
+        
+    title = min_2
+    plt.title(title)
+    
+    output_f = r"C:\Users\imada\Desktop\Research\tsp\LK\output\\" + tsp_f + "_{0}_{1}_{2}_{3}_{4}_{5}.png".format(NGEN,p_c,start_p_m,ind_num,move,m_f)
+    plt.savefig(output_f)
+    elapsed_time = (time.time() - start) / 3600 
+    print("elapsed_time:{0}".format(elapsed_time) + "[h]")
+
+    plt.show()
+
+
 
 if __name__ == '__main__':
     main()

@@ -642,7 +642,7 @@ def main():
     start = time.time()
     pop = creator.Individual()
     pop = create_pop(pop)
-    NGEN = 50000
+    NGEN = 30000
     m = 10
     c = 0
 

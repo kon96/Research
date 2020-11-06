@@ -1,0 +1,14 @@
+'main
+./main.bas
+
+'modules
+./modSample.bas
+
+'modules
+./count.bas
+
+'modules
+./check.bas
+
+'modules
+./change.bas
